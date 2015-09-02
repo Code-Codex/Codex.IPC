@@ -49,16 +49,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Codex.IPC.Server\App.config">
-      <Link>App.config</Link>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Codex.IPC.Client\Codex.IPC.Client.csproj">
+    <ProjectReference Include="..\..\Codex.IPC.Client\Codex.IPC.Client.csproj">
       <Project>{bb7a42fd-7eba-49c3-877b-13e024bec1c1}</Project>
       <Name>Codex.IPC.Client</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Codex.IPC.Implementation\Codex.IPC.Implementation.csproj">
+    <ProjectReference Include="..\..\Codex.IPC.Implementation\Codex.IPC.Implementation.csproj">
       <Project>{95411c81-0955-445b-9dc4-113429e4ded5}</Project>
       <Name>Codex.IPC.Implementation</Name>
     </ProjectReference>
@@ -66,6 +61,11 @@
       <Project>{b3bf7b41-885c-4e49-86ec-3055a0076a11}</Project>
       <Name>IPCTestCommon</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Codex.IPC.Server\App.config">
+      <Link>App.config</Link>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
