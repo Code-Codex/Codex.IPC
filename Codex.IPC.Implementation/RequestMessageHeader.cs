@@ -7,12 +7,25 @@ using System.Threading.Tasks;
 
 namespace Codex.IPC.Implementation
 {
+    /// <summary>
+    /// Header information for the request packet.
+    /// </summary>
     [DataContract]
     public class RequestMessageHeader
     {
+        /// <summary>
+        /// Identifier for the process on the machine.
+        /// </summary>
         [DataMember]
         public int ProcessID { get; set; }
 
+        /// <summary>
+        /// Type of message that is being transmitted in the body.
+        /// </summary>
+        /// <remarks>
+        /// This can be used to distinguish between the actions
+        /// that need to be performed on receipt of the message.
+        /// </remarks>
         [DataMember]
         public int MessageType { get; set; }
     }

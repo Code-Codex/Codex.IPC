@@ -66,8 +66,7 @@ namespace IPCTestServer
                 {
                     foreach (var client in _clientProcIds)
                     {
-                        var response = new ResponseMessage();
-                        response.Header = new ResponseMessageHeader(client.Value.Item1);
+                        var response = new ResponseMessage(client.Value.Item1);
                         if (( CounterType.CPU & client.Value.Item2 ) == CounterType.CPU)
                         {
                             var reply = new CounterData() { Type = CounterType.CPU, Value = getCurrentCpuUsage() };
@@ -91,7 +90,7 @@ namespace IPCTestServer
         {
             try
             {
-                Trace.WriteLine($"Message recieved from {e.Request.Header.ProcessID}: {e.Request.Header.MessageType}");
+                Trace.WriteLine($"Message received from {e.Request.Header.ProcessID}: {e.Request.Header.MessageType}");
                 if (e.Request.Header.MessageType == 0)
                 {
                     var body = e.Request.GetBody<RegisterMessage>();

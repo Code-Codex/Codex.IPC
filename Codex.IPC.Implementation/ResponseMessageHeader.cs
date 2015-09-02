@@ -7,9 +7,15 @@ using System.Threading.Tasks;
 
 namespace Codex.IPC.Implementation
 {
+    /// <summary>
+    /// Header information for the response packet.
+    /// </summary>
     [DataContract]
     public class ResponseMessageHeader
     {
+        /// <summary>
+        /// Header information for the request packet.
+        /// </summary>
         [DataMember]
         public RequestMessageHeader RequestHeader { get; set; }
 

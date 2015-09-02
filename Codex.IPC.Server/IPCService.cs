@@ -115,8 +115,7 @@ namespace Codex.IPC.Server
             public MessageRecievedEventArgs(RequestMessage request)
             {
                 Request = request;
-                Response = new ResponseMessage();
-                Response.Header = new ResponseMessageHeader(Request.Header);
+                Response = new ResponseMessage(Request.Header);
             }
         }
     }
