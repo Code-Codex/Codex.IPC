@@ -4,17 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{313BE7BA-BA59-41AB-8696-6948DA746BEA}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{B3BF7B41-885C-4E49-86EC-3055A0076A11}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IPTestClient</RootNamespace>
-    <AssemblyName>IPTestClient</AssemblyName>
+    <RootNamespace>IPCTestCommon</RootNamespace>
+    <AssemblyName>IPCTestCommon</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,10 +20,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -36,7 +32,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -45,27 +40,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="CounterData.cs" />
+    <Compile Include="CounterType.cs" />
+    <Compile Include="RegisterMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\Codex.IPC.Server\App.config">
-      <Link>App.config</Link>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Codex.IPC.Client\Codex.IPC.Client.csproj">
-      <Project>{bb7a42fd-7eba-49c3-877b-13e024bec1c1}</Project>
-      <Name>Codex.IPC.Client</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Codex.IPC.Implementation\Codex.IPC.Implementation.csproj">
-      <Project>{95411c81-0955-445b-9dc4-113429e4ded5}</Project>
-      <Name>Codex.IPC.Implementation</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\IPCTestCommon\IPCTestCommon.csproj">
-      <Project>{b3bf7b41-885c-4e49-86ec-3055a0076a11}</Project>
-      <Name>IPCTestCommon</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

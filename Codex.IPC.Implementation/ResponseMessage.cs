@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Codex.IPC.Implementation
 {
     [DataContract]
-    public class ResponseMessage
+    public class ResponseMessage:MessageBase
     {
         [DataMember]
         public ResponseMessageHeader Header { get; set; }

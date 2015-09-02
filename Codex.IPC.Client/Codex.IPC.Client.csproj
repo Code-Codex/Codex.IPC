@@ -73,6 +73,12 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Codex.IPC.Implementation\Codex.IPC.Implementation.csproj">
+      <Project>{95411c81-0955-445b-9dc4-113429e4ded5}</Project>
+      <Name>Codex.IPC.Implementation</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <WCFMetadataStorage Include="Service References\Client\" />
   </ItemGroup>
   <ItemGroup>
@@ -86,12 +92,6 @@
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Codex.IPC.Implementation\Codex.IPC.Implementation.csproj">
-      <Project>{95411c81-0955-445b-9dc4-113429e4ded5}</Project>
-      <Name>Codex.IPC.Implementation</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

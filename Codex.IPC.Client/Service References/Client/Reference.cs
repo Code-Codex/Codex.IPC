@@ -20,12 +20,6 @@ namespace Codex.IPC.Client {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IIPC/Call", ReplyAction="http://tempuri.org/IIPC/CallResponse")]
         System.Threading.Tasks.Task<Codex.IPC.Implementation.ResponseMessage> CallAsync(Codex.IPC.Implementation.RequestMessage request);
-        
-        [System.ServiceModel.OperationContractAttribute(IsOneWay=true, Action="http://tempuri.org/IIPC/Send")]
-        void Send(Codex.IPC.Implementation.RequestMessage request);
-        
-        [System.ServiceModel.OperationContractAttribute(IsOneWay=true, Action="http://tempuri.org/IIPC/Send")]
-        System.Threading.Tasks.Task SendAsync(Codex.IPC.Implementation.RequestMessage request);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -62,6 +56,59 @@ namespace Codex.IPC.Client {
         public System.Threading.Tasks.Task<Codex.IPC.Implementation.ResponseMessage> CallAsync(Codex.IPC.Implementation.RequestMessage request) {
             return base.Channel.CallAsync(request);
         }
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ServiceModel.ServiceContractAttribute(ConfigurationName="Client.IIPCDuplex", CallbackContract=typeof(Codex.IPC.Implementation.IIPCDuplexCallback))]
+    public interface IIPCDuplex {
+        
+        [System.ServiceModel.OperationContractAttribute(IsOneWay=true, Action="http://tempuri.org/IIPCDuplex/Send")]
+        void Send(Codex.IPC.Implementation.RequestMessage request);
+        
+        [System.ServiceModel.OperationContractAttribute(IsOneWay=true, Action="http://tempuri.org/IIPCDuplex/Send")]
+        System.Threading.Tasks.Task SendAsync(Codex.IPC.Implementation.RequestMessage request);
+        
+        [System.ServiceModel.OperationContractAttribute(IsOneWay=true, Action="http://tempuri.org/IIPCDuplex/Subscribe")]
+        void Subscribe(Codex.IPC.Implementation.RequestMessage request);
+        
+        [System.ServiceModel.OperationContractAttribute(IsOneWay=true, Action="http://tempuri.org/IIPCDuplex/Subscribe")]
+        System.Threading.Tasks.Task SubscribeAsync(Codex.IPC.Implementation.RequestMessage request);
+        
+        [System.ServiceModel.OperationContractAttribute(IsOneWay=true, Action="http://tempuri.org/IIPCDuplex/UnSubscribe")]
+        void UnSubscribe(Codex.IPC.Implementation.RequestMessage request);
+        
+        [System.ServiceModel.OperationContractAttribute(IsOneWay=true, Action="http://tempuri.org/IIPCDuplex/UnSubscribe")]
+        System.Threading.Tasks.Task UnSubscribeAsync(Codex.IPC.Implementation.RequestMessage request);
+    }
+    
+    
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    public interface IIPCDuplexChannel : Codex.IPC.Client.IIPCDuplex, System.ServiceModel.IClientChannel {
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    public partial class IPCDuplexClient : System.ServiceModel.DuplexClientBase<Codex.IPC.Client.IIPCDuplex>, Codex.IPC.Client.IIPCDuplex {
+        
+        public IPCDuplexClient(System.ServiceModel.InstanceContext callbackInstance) : 
+                base(callbackInstance) {
+        }
+        
+        public IPCDuplexClient(System.ServiceModel.InstanceContext callbackInstance, string endpointConfigurationName) : 
+                base(callbackInstance, endpointConfigurationName) {
+        }
+        
+        public IPCDuplexClient(System.ServiceModel.InstanceContext callbackInstance, string endpointConfigurationName, string remoteAddress) : 
+                base(callbackInstance, endpointConfigurationName, remoteAddress) {
+        }
+        
+        public IPCDuplexClient(System.ServiceModel.InstanceContext callbackInstance, string endpointConfigurationName, System.ServiceModel.EndpointAddress remoteAddress) : 
+                base(callbackInstance, endpointConfigurationName, remoteAddress) {
+        }
+        
+        public IPCDuplexClient(System.ServiceModel.InstanceContext callbackInstance, System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) : 
+                base(callbackInstance, binding, remoteAddress) {
+        }
         
         public void Send(Codex.IPC.Implementation.RequestMessage request) {
             base.Channel.Send(request);
@@ -69,6 +116,22 @@ namespace Codex.IPC.Client {
         
         public System.Threading.Tasks.Task SendAsync(Codex.IPC.Implementation.RequestMessage request) {
             return base.Channel.SendAsync(request);
+        }
+        
+        public void Subscribe(Codex.IPC.Implementation.RequestMessage request) {
+            base.Channel.Subscribe(request);
+        }
+        
+        public System.Threading.Tasks.Task SubscribeAsync(Codex.IPC.Implementation.RequestMessage request) {
+            return base.Channel.SubscribeAsync(request);
+        }
+        
+        public void UnSubscribe(Codex.IPC.Implementation.RequestMessage request) {
+            base.Channel.UnSubscribe(request);
+        }
+        
+        public System.Threading.Tasks.Task UnSubscribeAsync(Codex.IPC.Implementation.RequestMessage request) {
+            return base.Channel.UnSubscribeAsync(request);
         }
     }
 }

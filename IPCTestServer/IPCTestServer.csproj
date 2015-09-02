@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{313BE7BA-BA59-41AB-8696-6948DA746BEA}</ProjectGuid>
+    <ProjectGuid>{48B775D8-BDC8-4040-AB3C-F3CD910B919D}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IPTestClient</RootNamespace>
-    <AssemblyName>IPTestClient</AssemblyName>
+    <RootNamespace>IPCTestServer</RootNamespace>
+    <AssemblyName>IPCTestServer</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -22,7 +22,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -61,6 +60,14 @@
     <ProjectReference Include="..\Codex.IPC.Implementation\Codex.IPC.Implementation.csproj">
       <Project>{95411c81-0955-445b-9dc4-113429e4ded5}</Project>
       <Name>Codex.IPC.Implementation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Codex.IPC.Server\Codex.IPC.Server.csproj">
+      <Project>{8a40ee59-73a8-4a26-b962-f0e55dfb329f}</Project>
+      <Name>Codex.IPC.Server</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Codex.IPC.Shmem\Codex.IPC.Shmem.csproj">
+      <Project>{7de9db6c-0c55-418d-bed4-9676b8ac30fe}</Project>
+      <Name>Codex.IPC.Shmem</Name>
     </ProjectReference>
     <ProjectReference Include="..\IPCTestCommon\IPCTestCommon.csproj">
       <Project>{b3bf7b41-885c-4e49-86ec-3055a0076a11}</Project>

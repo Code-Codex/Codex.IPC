@@ -22,4 +22,25 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:element name="Subscribe">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/Codex.IPC.Implementation" minOccurs="0" name="request" nillable="true" type="q4:RequestMessage" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UnSubscribe">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q5="http://schemas.datacontract.org/2004/07/Codex.IPC.Implementation" minOccurs="0" name="request" nillable="true" type="q5:RequestMessage" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Reply">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/Codex.IPC.Implementation" minOccurs="0" name="response" nillable="true" type="q6:ResponseMessage" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
 </xs:schema>
