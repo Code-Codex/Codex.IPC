@@ -68,17 +68,17 @@ namespace IPCTestServer
                     {
                         var response = new ResponseMessage();
                         response.Header = new ResponseMessageHeader(client.Value.Item1);
-                        if ((client.Value.Item2 & CounterType.CPU) == CounterType.CPU)
+                        if (( CounterType.CPU & client.Value.Item2 ) == CounterType.CPU)
                         {
                             var reply = new CounterData() { Type = CounterType.CPU, Value = getCurrentCpuUsage() };
                             response.SetBody<CounterData>(reply);
-                            IPCService.Instance.SendReply(response);
+                            IPCService.Instance.SendReply(response.Header.RequestHeader.ProcessID.ToString(),response);
                         }
-                        if ((client.Value.Item2 & CounterType.MEMORY) == CounterType.MEMORY)
+                        if ((CounterType.MEMORY & client.Value.Item2) == CounterType.MEMORY)
                         {
                             var reply = new CounterData() { Type = CounterType.MEMORY, Value = getAvailableRAM() };
                             response.SetBody<CounterData>(reply);
-                            IPCService.Instance.SendReply(response);
+                            IPCService.Instance.SendReply(response.Header.RequestHeader.ProcessID.ToString(),response);
                         }
                     }
                 }

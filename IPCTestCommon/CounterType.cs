@@ -10,7 +10,7 @@ namespace IPCTestCommon
     [Flags]
     public enum CounterType
     {
-        CPU,
-        MEMORY
+        CPU = 0x01,
+        MEMORY = 0x02
     }
 }

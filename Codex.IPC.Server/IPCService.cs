@@ -68,15 +68,35 @@ namespace Codex.IPC.Server
             OnMessageRecieved(null, new MessageRecievedEventArgs(request));
         }
 
-        public void SendReply(ResponseMessage response)
+        public void SendReply(string serverID,ResponseMessage response)
+        {
+            if (_subscriptions.ContainsKey(serverID))
+            {
+                var replyChannel = _subscriptions[serverID];
+
+                try
+                {
+                    replyChannel.Reply(response);
+                }
+                catch (Exception ex)
+                {
+                    Trace.WriteLine($"Reply to {response.Header.RequestHeader.ProcessID} failed with error: {ex.Message}");
+                    _subscriptions.Remove(serverID);
+                }
+            }
+
+        }
+
+        public void Broadcast(ResponseMessage response)
         {
             List<string> invalidChannels = new List<string>();
             foreach (var replyChannel in _subscriptions)
             {
-                try {
+                try
+                {
                     replyChannel.Value.Reply(response);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Trace.WriteLine($"Reply to {response.Header.RequestHeader.ProcessID} failed with error: {ex.Message}");
                     invalidChannels.Add(replyChannel.Key);

@@ -10,7 +10,7 @@ namespace Codex.IPC.Shmem
 {
     public sealed class ShmemServer : IDisposable
     {
-        internal const string SHMENM_POSTFIX = "BauerShmem";
+        internal const string SHMENM_POSTFIX = "CodexShmem";
 
         private static ShmemServer _instance;
 

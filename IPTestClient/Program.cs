@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using IPCTestCommon;
+using Codex.IPC;
 
 namespace IPTestClient
 {
@@ -39,19 +40,18 @@ namespace IPTestClient
             ManualResetEvent resetEvent = (ManualResetEvent)mrevent;
             // Construct InstanceContext to handle messages on callback interface
             InstanceContext instanceContext = new InstanceContext(new CallbackHandler());
-            var processAddress = $"net.pipe://localhost/Design_Time_Addresses/Codex/{_serverProcId}/IPCService";
-            _client = new IPCDuplexClient(instanceContext, "NamedPipeBinding_IIPCDuplex", processAddress);
+            _client = ClientHelper.GetDuplexClient(instanceContext,_serverProcId.ToString());
             _client.Open();
             var requestMessage = new RequestMessage();
-            requestMessage.SetBody<RegisterMessage>(new RegisterMessage() { Counter =  CounterType.MEMORY });
+            var registerMessage = new RegisterMessage() { Counter = CounterType.MEMORY };
+            Trace.WriteLine(registerMessage.Counter.ToString());
+            requestMessage.SetBody<RegisterMessage>(registerMessage);
             _client.Subscribe(requestMessage);
             resetEvent.WaitOne();
             _client.Close();
 
         }
     }
-
-
 
 
     public class CallbackHandler : IIPCDuplexCallback
