@@ -123,7 +123,6 @@ namespace Codex.IPC.Server
                     _subscriptions.Remove(clientID);
                 }
             }
-
         }
 
         /// <summary>
