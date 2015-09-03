@@ -10,7 +10,14 @@ using System.Threading.Tasks;
 namespace Codex.IPC.Server
 {
     public class Server
+
     {
+        /// <summary>
+        /// Start the IPC server for this process.
+        /// </summary>
+        /// <param name="resetEvent">Reset event to gracefully shutdown the server.</param>
+        /// <param name="baseAddress">Base address for the process.</param>
+        /// <param name="hostName">Host name for the machine.</param>
         public void Start(ManualResetEvent resetEvent, string baseAddress, string hostName = "localhost")
         {
             var processAddress = $"Design_Time_Addresses/Codex/{baseAddress}";
