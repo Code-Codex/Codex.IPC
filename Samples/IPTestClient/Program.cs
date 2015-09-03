@@ -40,7 +40,7 @@ namespace IPTestClient
             ManualResetEvent resetEvent = (ManualResetEvent)mrevent;
             // Construct InstanceContext to handle messages on callback interface
             InstanceContext instanceContext = new InstanceContext(new CallbackHandler());
-            _client = ClientHelper.GetDuplexClient(instanceContext,_serverProcId.ToString());
+            _client = ClientHelper.GetDuplexClient(instanceContext,_serverProcId.ToString(), ClientHelper.ServerLocation.REMOTE,"localhost",64000);
             _client.Open();
             var requestMessage = new RequestMessage();
             var registerMessage = new RegisterMessage() { Counter = CounterType.MEMORY };

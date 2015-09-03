@@ -18,10 +18,10 @@ namespace Codex.IPC.Server
         /// <param name="resetEvent">Reset event to gracefully shutdown the server.</param>
         /// <param name="baseAddress">Base address for the process.</param>
         /// <param name="hostName">Host name for the machine.</param>
-        public void Start(ManualResetEvent resetEvent, string baseAddress, string hostName = "localhost")
+        public void Start(ManualResetEvent resetEvent, string baseAddress, string hostName = "localhost",int port = 64000)
         {
             var processAddress = $"Design_Time_Addresses/Codex/{baseAddress}";
-            Uri[] baseAddresses = { new Uri($"net.pipe://{hostName}/{processAddress}") };
+            Uri[] baseAddresses = { new Uri($"net.pipe://{hostName}/{processAddress}"), new Uri($"net.tcp://{hostName}:{port}/{processAddress}") };
             using (var host = new ServiceHost(IPCService.Instance, baseAddresses))
             {
                 host.Open();

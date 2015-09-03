@@ -51,8 +51,8 @@ namespace Codex.IPC
         /// <returns>Client object.</returns>
         public static IPCClient GetClient(string processID, ServerLocation serverLoc = ServerLocation.LOCAL, string hostName = "localhost", int portNumber = -1)
         {
-            var endpointName = serverLoc == ServerLocation.LOCAL ? "NamedPipeBinding_IIPCDuplex" : "";
-            return new IPCClient("NamedPipeBinding_IIPCDuplex", GetServerAddress(processID, serverLoc, hostName));
+            var endpointName = serverLoc == ServerLocation.LOCAL ? "NamedPipeBinding_IIPCDuplex" : "TCPBinding_IIPCDuplex";
+            return new IPCClient(endpointName, GetServerAddress(processID, serverLoc, hostName,portNumber));
         }
 
         /// <summary>
@@ -65,8 +65,8 @@ namespace Codex.IPC
         /// <returns>Client object.</returns>
         public static IPCDuplexClient GetDuplexClient(InstanceContext context, string processID, ServerLocation serverLoc = ServerLocation.LOCAL, string hostName = "localhost", int portNumber = -1)
         {
-            var endpointName = serverLoc == ServerLocation.LOCAL ? "NamedPipeBinding_IIPCDuplex" : "";
-           return new IPCDuplexClient(context, "NamedPipeBinding_IIPCDuplex", GetServerAddress(processID,serverLoc,hostName));
+            var endpointName = serverLoc == ServerLocation.LOCAL ? "NamedPipeBinding_IIPCDuplex" : "TCPBinding_IIPCDuplex";
+           return new IPCDuplexClient(context, endpointName, GetServerAddress(processID,serverLoc,hostName,portNumber));
         }
     }
 }
