@@ -17,7 +17,7 @@ namespace Codex.IPC.Implementation
         /// Identifier for the process on the machine.
         /// </summary>
         [DataMember]
-        public int ProcessID { get; set; }
+        public string ProcessID { get; set; }
 
         /// <summary>
         /// Type of message that is being transmitted in the body.

@@ -15,7 +15,7 @@ namespace IPCTestServer
     class Program
     {
         static Thread _IPCServerThread, _replyThread;
-        static Dictionary<int, Tuple<RequestMessageHeader, CounterType>> _clientProcIds = new Dictionary<int, Tuple<RequestMessageHeader, CounterType>>();
+        static Dictionary<string, Tuple<RequestMessageHeader, CounterType>> _clientProcIds = new Dictionary<string, Tuple<RequestMessageHeader, CounterType>>();
         static PerformanceCounter _cpuCounter;
         static PerformanceCounter _ramCounter;
 
@@ -91,7 +91,7 @@ namespace IPCTestServer
             try
             {
                 Trace.WriteLine($"Message received from {e.Request.Header.ProcessID}: {e.Request.Header.MessageType}");
-                if (e.Request.Header.MessageType == 0)
+                if (e.Request.Header.MessageType == (int)MessageType.SUBSCRIBE)
                 {
                     var body = e.Request.GetBody<RegisterMessage>();
                     Trace.WriteLine($"Counter type: {body.Counter}");

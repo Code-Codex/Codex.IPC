@@ -25,7 +25,7 @@ namespace Codex.IPC.Implementation
         public RequestMessage()
         {
             Header = new RequestMessageHeader();
-            Header.ProcessID = System.Diagnostics.Process.GetCurrentProcess().Id;
+            Header.ProcessID = System.Diagnostics.Process.GetCurrentProcess().Id.ToString();
         }
     }
 }

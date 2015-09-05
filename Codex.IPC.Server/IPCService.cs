@@ -85,6 +85,7 @@ namespace Codex.IPC.Server
         public void Subscribe(RequestMessage request)
         {
             IIPCDuplexCallback callback = OperationContext.Current.GetCallbackChannel<IIPCDuplexCallback>();
+            request.Header.MessageType = (int)MessageType.SUBSCRIBE;
             if (!_subscriptions.ContainsKey(request.Header.ProcessID.ToString()))
                 _subscriptions.Add(request.Header.ProcessID.ToString(), callback);
             OnMessageRecieved(null, new MessageRecievedEventArgs(request));
@@ -97,6 +98,7 @@ namespace Codex.IPC.Server
         /// <param name="request">Object representing the requested information</param>
         public void UnSubscribe(RequestMessage request)
         {
+            request.Header.MessageType = (int)MessageType.UNSUBSCRIBE;
             if (_subscriptions.ContainsKey(request.Header.ProcessID.ToString()))
                 _subscriptions.Remove(request.Header.ProcessID.ToString());
             OnMessageRecieved(null, new MessageRecievedEventArgs(request));
