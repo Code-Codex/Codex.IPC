@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="c0cd94c6-d8d2-468b-bfa9-89db60481b36" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="818613c6-9d2d-4ca1-9f5f-7812454ae6b0" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
   <ClientOptions>
     <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
-    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
     <EnableDataBinding>true</EnableDataBinding>
     <ExcludedTypes />
     <ImportXmlTypes>false</ImportXmlTypes>
     <GenerateInternalTypes>false</GenerateInternalTypes>
     <GenerateMessageContracts>false</GenerateMessageContracts>
     <NamespaceMappings />
-    <CollectionMappings />
+    <CollectionMappings>
+      <CollectionMapping TypeName="System.Collections.Generic.List`1" Category="List" />
+    </CollectionMappings>
     <GenerateSerializableTypes>true</GenerateSerializableTypes>
     <Serializer>Auto</Serializer>
     <UseSerializerForFaults>true</UseSerializerForFaults>
@@ -22,10 +23,10 @@
     <MetadataSource Address="net.pipe://localhost/Design_Time_Addresses/Codex/mex" Protocol="mex" SourceId="1" />
   </MetadataSources>
   <Metadata>
-    <MetadataFile FileName="service.wsdl" MetadataType="Wsdl" ID="1c6743b1-a02c-4da7-b324-6c5f23ca16c0" SourceId="1" SourceUrl="net.pipe://localhost/Design_Time_Addresses/Codex/mex" />
-    <MetadataFile FileName="service.xsd" MetadataType="Schema" ID="c952eff9-4183-4d31-b6b9-9135662bdc4f" SourceId="1" SourceUrl="net.pipe://localhost/Design_Time_Addresses/Codex/mex" />
-    <MetadataFile FileName="service1.xsd" MetadataType="Schema" ID="3d7be68e-1148-4363-9bac-38f7dfe90d6f" SourceId="1" SourceUrl="net.pipe://localhost/Design_Time_Addresses/Codex/mex" />
-    <MetadataFile FileName="Codex.IPC.Implementation.xsd" MetadataType="Schema" ID="f10e3ed4-9b07-47f3-9c1b-6f4abd640c65" SourceId="1" SourceUrl="net.pipe://localhost/Design_Time_Addresses/Codex/mex" />
+    <MetadataFile FileName="service.wsdl" MetadataType="Wsdl" ID="69d8e6ae-884f-4c20-b1f9-93db39cee5f2" SourceId="1" SourceUrl="net.pipe://localhost/Design_Time_Addresses/Codex/mex" />
+    <MetadataFile FileName="service.xsd" MetadataType="Schema" ID="fb2e904c-4e89-47c9-b69b-aebd694bb15d" SourceId="1" SourceUrl="net.pipe://localhost/Design_Time_Addresses/Codex/mex" />
+    <MetadataFile FileName="service1.xsd" MetadataType="Schema" ID="0137e482-1ec4-403c-8e8f-5bde5646fd6c" SourceId="1" SourceUrl="net.pipe://localhost/Design_Time_Addresses/Codex/mex" />
+    <MetadataFile FileName="Codex.IPC.Implementation.xsd" MetadataType="Schema" ID="e7fe0eee-bace-4806-b11f-417e3180feda" SourceId="1" SourceUrl="net.pipe://localhost/Design_Time_Addresses/Codex/mex" />
   </Metadata>
   <Extensions>
     <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />

@@ -19,14 +19,18 @@
   <xs:complexType name="RequestMessageHeader">
     <xs:sequence>
       <xs:element minOccurs="0" name="MessageType" type="xs:int" />
-      <xs:element minOccurs="0" name="ProcessID" type="xs:int" />
+      <xs:element minOccurs="0" name="ProcessID" nillable="true" type="xs:string" />
     </xs:sequence>
   </xs:complexType>
   <xs:element name="RequestMessageHeader" nillable="true" type="tns:RequestMessageHeader" />
   <xs:complexType name="ResponseMessage">
-    <xs:sequence>
-      <xs:element minOccurs="0" name="Header" nillable="true" type="tns:ResponseMessageHeader" />
-    </xs:sequence>
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:MessageBase">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Header" nillable="true" type="tns:ResponseMessageHeader" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
   </xs:complexType>
   <xs:element name="ResponseMessage" nillable="true" type="tns:ResponseMessage" />
   <xs:complexType name="ResponseMessageHeader">
