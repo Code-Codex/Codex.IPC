@@ -20,48 +20,61 @@ namespace Codex.IPC.Implementation
         {
             String transport = String.Empty;
             var serverHostName = hostName;
-            if (scheme.IsBindingScheme(BindingScheme.NAMED_PIPE))
+            switch (scheme)
             {
-                transport = "net.pipe";
-                if (isMex)
-                    return $"{transport}://{serverHostName}/Design_Time_Addresses/Codex/{processID}/mex";
-                else
-                    return $"{transport}://{serverHostName}/Design_Time_Addresses/Codex/{processID}/IPCService";
+                case BindingScheme.NAMED_PIPE:
+                    transport = "net.pipe";
+                    break;
+                case BindingScheme.TCP:
+                    transport = "net.tcp";
+                    serverHostName = $"{hostName}:{portNumber}";
+                    break;
+                case BindingScheme.HTTP:
+                    transport = "http";
+                    serverHostName = $"{hostName}:{portNumber}";
+                    break;
             }
 
-            if (scheme.IsBindingScheme(BindingScheme.TCP))
-            {
-                transport = "net.tcp";
-                serverHostName = $"{hostName}:{portNumber}";
-                if (isMex)
-                    return $"{transport}://{serverHostName}/Design_Time_Addresses/Codex/{processID}/mex";
-                else
-                    return $"{transport}://{serverHostName}/Design_Time_Addresses/Codex/{processID}/IPCService";
-            }
+            if (isMex)
+                return $"{transport}://{serverHostName}/Design_Time_Addresses/Codex/{processID}/mex";
+            else
+                return $"{transport}://{serverHostName}/Design_Time_Addresses/Codex/{processID}/IPCService";
 
-            return String.Empty;
         }
 
 
         public static Binding GetBinding(this BindingScheme scheme)
         {
-            if (scheme==BindingScheme.TCP)
+            Binding binding = null;
+            switch (scheme)
             {
-                var binding = new NetTcpBinding(SecurityMode.None);
-                binding.MaxBufferPoolSize = MAX_MSG_SIZE;
-                binding.MaxReceivedMessageSize = MAX_MSG_SIZE;
-                return binding;
+                case BindingScheme.TCP:
+                    {
+                        binding = new NetTcpBinding(SecurityMode.None);
+                        ((NetTcpBinding)binding).MaxBufferPoolSize = MAX_MSG_SIZE;
+                        ((NetTcpBinding)binding).MaxReceivedMessageSize = MAX_MSG_SIZE;
+                        break;
+                    }
+                case BindingScheme.NAMED_PIPE:
+                    {
+                        binding = new NetNamedPipeBinding(NetNamedPipeSecurityMode.None);
+                        ((NetNamedPipeBinding)binding).MaxBufferPoolSize = MAX_MSG_SIZE;
+                        ((NetNamedPipeBinding)binding).MaxReceivedMessageSize = MAX_MSG_SIZE;
+                        break;
+                    }
+                case BindingScheme.HTTP:
+                    {
+                        binding = new NetHttpBinding(BasicHttpSecurityMode.None);
+                        var httpBinding = ((NetHttpBinding)binding);
+                        httpBinding.MaxBufferPoolSize = MAX_MSG_SIZE;
+                        httpBinding.MaxReceivedMessageSize = MAX_MSG_SIZE;
+                        httpBinding.WebSocketSettings.TransportUsage = WebSocketTransportUsage.Always;
+                        httpBinding.MessageEncoding = NetHttpMessageEncoding.Text;
+                        break;
+                    }
             }
 
-            if (scheme==BindingScheme.NAMED_PIPE)
-            {
-                var binding = new NetNamedPipeBinding(NetNamedPipeSecurityMode.None);
-                binding.MaxBufferPoolSize = MAX_MSG_SIZE;
-                binding.MaxReceivedMessageSize = MAX_MSG_SIZE;
-                return binding;
-            }
-
-            return null;
+            return binding;
         }
     }
 }

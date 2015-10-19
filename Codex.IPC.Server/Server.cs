@@ -21,16 +21,22 @@ namespace Codex.IPC.Server
         /// <param name="resetEvent">Reset event to gracefully shutdown the server.</param>
         /// <param name="processID">Base address for the process.</param>
         /// <param name="hostName">Host name for the machine.</param>
-        public void Start(ManualResetEvent resetEvent, string processID, BindingScheme scheme, string hostName = "localhost", int port = 64000)
+        public void Start(ManualResetEvent resetEvent, string processID, BindingScheme scheme, string hostName = "localhost", int tcpPort = 64000, int httpPort = 64001)
         {
             List<Uri> baseAddresses = new List<Uri>();
             if (scheme.IsBindingScheme(BindingScheme.NAMED_PIPE))
             {
-                baseAddresses.Add(new Uri(BindingScheme.NAMED_PIPE.GetEndpointAddress(processID, false, hostName, port)));
+                baseAddresses.Add(new Uri(BindingScheme.NAMED_PIPE.GetEndpointAddress(processID, false, hostName, tcpPort)));
             }
+
             if (scheme.IsBindingScheme(BindingScheme.TCP))
             {
-                baseAddresses.Add(new Uri(BindingScheme.TCP.GetEndpointAddress(processID, false, hostName, port)));
+                baseAddresses.Add(new Uri(BindingScheme.TCP.GetEndpointAddress(processID, false, hostName, tcpPort)));
+            }
+
+            if (scheme.IsBindingScheme(BindingScheme.HTTP))
+            {
+                baseAddresses.Add(new Uri(BindingScheme.HTTP.GetEndpointAddress(processID, false, hostName, httpPort)));
             }
             using (var host = new ServiceHost(IPCService.Instance, baseAddresses.ToArray()))
             {
@@ -45,19 +51,27 @@ namespace Codex.IPC.Server
                 // Setup the bindings 
                 if (scheme.IsBindingScheme(BindingScheme.TCP))
                 {
-                    NetTcpBinding tcpBinding = (NetTcpBinding)BindingScheme.TCP.GetBinding();
+                    var tcpBinding = (NetTcpBinding)BindingScheme.TCP.GetBinding();
                     host.AddServiceEndpoint(typeof(IIPC), tcpBinding, "");
                     host.AddServiceEndpoint(typeof(IIPCDuplex), tcpBinding, "");
 
-                    host.AddServiceEndpoint(typeof(IMetadataExchange), MetadataExchangeBindings.CreateMexTcpBinding(), BindingScheme.TCP.GetEndpointAddress(processID, true, hostName, port));
+                    host.AddServiceEndpoint(typeof(IMetadataExchange), MetadataExchangeBindings.CreateMexTcpBinding(), BindingScheme.TCP.GetEndpointAddress(processID, true, hostName, tcpPort));
                 }
 
                 if (scheme.IsBindingScheme(BindingScheme.NAMED_PIPE))
                 {
-                    NetNamedPipeBinding namedPipeBinding = (NetNamedPipeBinding)BindingScheme.NAMED_PIPE.GetBinding();
+                    var namedPipeBinding = (NetNamedPipeBinding)BindingScheme.NAMED_PIPE.GetBinding();
                     host.AddServiceEndpoint(typeof(IIPC), namedPipeBinding, "");
                     host.AddServiceEndpoint(typeof(IIPCDuplex), namedPipeBinding, "");
-                    host.AddServiceEndpoint(typeof(IMetadataExchange), MetadataExchangeBindings.CreateMexNamedPipeBinding(), BindingScheme.NAMED_PIPE.GetEndpointAddress(processID, true, hostName, port));
+                    host.AddServiceEndpoint(typeof(IMetadataExchange), MetadataExchangeBindings.CreateMexNamedPipeBinding(), BindingScheme.NAMED_PIPE.GetEndpointAddress(processID, true, hostName, tcpPort));
+                }
+
+                if (scheme.IsBindingScheme(BindingScheme.HTTP))
+                {
+                    var httpBinding = (NetHttpBinding)BindingScheme.HTTP.GetBinding();
+                    host.AddServiceEndpoint(typeof(IIPC), httpBinding, "");
+                    host.AddServiceEndpoint(typeof(IIPCDuplex), httpBinding, "");
+                    host.AddServiceEndpoint(typeof(IMetadataExchange), MetadataExchangeBindings.CreateMexHttpBinding(), BindingScheme.HTTP.GetEndpointAddress(processID, true, hostName, httpPort));
                 }
 
                 host.Open();
