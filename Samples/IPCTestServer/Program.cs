@@ -55,7 +55,7 @@ namespace IPCTestServer
             ManualResetEvent resetEvent = (ManualResetEvent)mrevent;
             var host = new Server();
             IPCService.Instance.OnMessageRecieved += IPCService_OnMessageRecieved;
-            host.Start(resetEvent, Process.GetCurrentProcess().Id.ToString(),"localhost",64000);
+            host.Start(resetEvent, Process.GetCurrentProcess().Id.ToString(), BindingScheme.NAMED_PIPE|BindingScheme.TCP,"localhost",64000);
         }
 
         static void ReplyThreadLoop()
@@ -90,11 +90,11 @@ namespace IPCTestServer
         {
             try
             {
-                Trace.WriteLine($"Message received from {e.Request.Header.ProcessID}: {e.Request.Header.MessageType}");
+                Console.WriteLine($"Message received from {e.Request.Header.ProcessID}: {e.Request.Header.MessageType}");
                 if (e.Request.Header.MessageType == (int)MessageType.SUBSCRIBE)
                 {
                     var body = e.Request.GetBody<RegisterMessage>();
-                    Trace.WriteLine($"Counter type: {body.Counter}");
+                    Console.WriteLine($"Counter type: {body.Counter}");
                     if (!_clientProcIds.ContainsKey(e.Request.Header.ProcessID))
                         _clientProcIds[e.Request.Header.ProcessID] = new Tuple<RequestMessageHeader, CounterType>(e.Request.Header, body.Counter);
                 }

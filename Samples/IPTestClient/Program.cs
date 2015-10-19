@@ -19,10 +19,15 @@ namespace IPTestClient
         static Thread _IPCClientThread;
         static IPCDuplexClient _client;
         static int _serverProcId;
+        static CounterType _counterType;
 
         static void Main(string[] args)
         {
             _serverProcId = int.Parse(args[0]);
+            _counterType = (CounterType)int.Parse(args[1]);
+
+            if(args.Count() == 3)
+                _counterType |= (CounterType)int.Parse(args[2]);
             ManualResetEvent resetEvent = new ManualResetEvent(false);
 
             _IPCClientThread = new Thread(ClientThreadLoop);
@@ -40,10 +45,10 @@ namespace IPTestClient
             ManualResetEvent resetEvent = (ManualResetEvent)mrevent;
             // Construct InstanceContext to handle messages on callback interface
             InstanceContext instanceContext = new InstanceContext(new CallbackHandler());
-            _client = ClientHelper.GetDuplexClient(instanceContext,_serverProcId.ToString(), ClientHelper.ServerLocation.REMOTE,"localhost",64000);
+            _client = ClientHelper.GetDuplexClient(instanceContext,_serverProcId.ToString(), BindingScheme.TCP,"localhost",64000);
             _client.Open();
             var requestMessage = new RequestMessage();
-            var registerMessage = new RegisterMessage() { Counter = CounterType.MEMORY };
+            var registerMessage = new RegisterMessage() { Counter = _counterType };
             Trace.WriteLine(registerMessage.Counter.ToString());
             requestMessage.SetBody<RegisterMessage>(registerMessage);
             _client.Subscribe(requestMessage);
@@ -59,7 +64,7 @@ namespace IPTestClient
         public void Reply(ResponseMessage response)
         {
             var data = response.GetBody<CounterData>();
-            Trace.WriteLine($"{data.Type} - {data.Value}");
+            Console.WriteLine($"{data.Type} - {data.Value}");
         }
     }
 }

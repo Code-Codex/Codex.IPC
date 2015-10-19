@@ -64,11 +64,6 @@
     <Compile Include="Server.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Codex.IPC.Implementation\Codex.IPC.Implementation.csproj">
       <Project>{95411c81-0955-445b-9dc4-113429e4ded5}</Project>
       <Name>Codex.IPC.Implementation</Name>

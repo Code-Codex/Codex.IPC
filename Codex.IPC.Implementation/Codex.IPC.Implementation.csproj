@@ -46,6 +46,8 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BindingScheme.cs" />
+    <Compile Include="Helpers.cs" />
     <Compile Include="IIPC.cs" />
     <Compile Include="MessageBase.cs" />
     <Compile Include="MessageType.cs" />
