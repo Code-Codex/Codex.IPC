@@ -18,13 +18,16 @@ namespace IPTestClient
     {
         static Thread _IPCClientThread;
         static IPCDuplexClient _client;
-        static int _serverProcId;
+        static string _serverProcId;
         static CounterType _counterType;
 
         static void Main(string[] args)
         {
-            _serverProcId = int.Parse(args[0]);
-            _counterType = (CounterType)int.Parse(args[1]);
+           _serverProcId = "IPCTestServer";
+           if (args.Any())
+              _counterType = (CounterType) int.Parse(args[0]);
+               else
+            _counterType = CounterType.CPU;
 
             if(args.Count() == 3)
                 _counterType |= (CounterType)int.Parse(args[2]);
@@ -45,7 +48,7 @@ namespace IPTestClient
             ManualResetEvent resetEvent = (ManualResetEvent)mrevent;
             // Construct InstanceContext to handle messages on callback interface
             InstanceContext instanceContext = new InstanceContext(new CallbackHandler());
-            _client = ClientHelper.GetDuplexClient(instanceContext,_serverProcId.ToString(), BindingScheme.HTTP,"172.16.120.114",64001);
+            _client = ClientHelper.GetDuplexClient(instanceContext,_serverProcId, BindingScheme.TCP);
             _client.Open();
             var requestMessage = new RequestMessage();
             var registerMessage = new RegisterMessage() { Counter = _counterType };

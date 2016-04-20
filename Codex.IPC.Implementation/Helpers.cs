@@ -11,12 +11,13 @@ namespace Codex.IPC.Implementation
     public static class Helpers
     {
         const int MAX_MSG_SIZE = 50000000;
+
         public static bool IsBindingScheme(this BindingScheme scheme, BindingScheme schemeToCheck)
         {
             return (scheme & schemeToCheck) == schemeToCheck;
         }
 
-        public static string GetEndpointAddress(this BindingScheme scheme, string processID, bool isMex = false, string hostName = "localhost", int portNumber = 64000)
+        public static string GetEndpointAddress(this BindingScheme scheme, string processID, bool isMex = false, string hostName = "localhost", int portNumber = Constants.TCP_PORT_NUMBER)
         {
             String transport = String.Empty;
             var serverHostName = hostName;

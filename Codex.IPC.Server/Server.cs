@@ -21,7 +21,7 @@ namespace Codex.IPC.Server
         /// <param name="resetEvent">Reset event to gracefully shutdown the server.</param>
         /// <param name="processID">Base address for the process.</param>
         /// <param name="hostName">Host name for the machine.</param>
-        public void Start(ManualResetEvent resetEvent, string processID, BindingScheme scheme, string hostName = "localhost", int tcpPort = 64000, int httpPort = 64001)
+        public void Start(ManualResetEvent resetEvent, string processID, BindingScheme scheme, string hostName = "localhost", int tcpPort = Constants.TCP_PORT_NUMBER, int httpPort = Constants.HTTP_PORT_NUMBER)
         {
             List<Uri> baseAddresses = new List<Uri>();
             if (scheme.IsBindingScheme(BindingScheme.NAMED_PIPE))

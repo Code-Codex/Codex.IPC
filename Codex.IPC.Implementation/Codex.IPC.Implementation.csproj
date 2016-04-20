@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BindingScheme.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="IIPC.cs" />
     <Compile Include="MessageBase.cs" />
