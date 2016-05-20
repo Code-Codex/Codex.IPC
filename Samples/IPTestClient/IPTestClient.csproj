@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>IPTestClient</RootNamespace>
     <AssemblyName>IPTestClient</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -50,18 +50,17 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Codex.IPC.Client\Codex.IPC.Client.csproj">
-      <Project>{bb7a42fd-7eba-49c3-877b-13e024bec1c1}</Project>
-      <Name>Codex.IPC.Client</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Codex.IPC.Implementation\Codex.IPC.Implementation.csproj">
-      <Project>{95411c81-0955-445b-9dc4-113429e4ded5}</Project>
-      <Name>Codex.IPC.Implementation</Name>
+    <ProjectReference Include="..\..\Codex.IPC\Codex.IPC.csproj">
+      <Project>{54fa73d4-ad10-48ba-bd5d-49e8a767fbe2}</Project>
+      <Name>Codex.IPC</Name>
     </ProjectReference>
     <ProjectReference Include="..\IPCTestCommon\IPCTestCommon.csproj">
       <Project>{b3bf7b41-885c-4e49-86ec-3055a0076a11}</Project>
       <Name>IPCTestCommon</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

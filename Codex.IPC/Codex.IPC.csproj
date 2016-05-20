@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7DE9DB6C-0C55-418D-BED4-9676B8AC30FE}</ProjectGuid>
+    <ProjectGuid>{54FA73D4-AD10-48BA-BD5D-49E8A767FBE2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Codex.IPC.Shmem</RootNamespace>
-    <AssemblyName>Codex.IPC.Shmem</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <RootNamespace>Codex.IPC</RootNamespace>
+    <AssemblyName>Codex.IPC</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,6 +32,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -41,9 +42,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ShmemClient.cs" />
-    <Compile Include="ShmemServer.cs" />
+    <Compile Include="Client\Client.cs" />
+    <Compile Include="Client\ClientHelper.cs" />
+    <Compile Include="Implementation\BindingScheme.cs" />
+    <Compile Include="Implementation\Constants.cs" />
+    <Compile Include="Implementation\Helpers.cs" />
+    <Compile Include="Implementation\IIPC.cs" />
+    <Compile Include="Implementation\MessageBase.cs" />
+    <Compile Include="Implementation\MessageType.cs" />
+    <Compile Include="Implementation\RequestMessage.cs" />
+    <Compile Include="Implementation\RequestMessageHeader.cs" />
+    <Compile Include="Implementation\ResponseMessage.cs" />
+    <Compile Include="Implementation\ResponseMessageHeader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Server\IPCService.cs" />
+    <Compile Include="Server\Server.cs" />
+    <Compile Include="Shmem\ShmemClient.cs" />
+    <Compile Include="Shmem\ShmemServer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,6 +1,5 @@
 ﻿using Codex.IPC.Implementation;
 using Codex.IPC.Server;
-using Codex.IPC.Shmem;
 using IPCTestCommon;
 using System;
 using System.Collections.Concurrent;
