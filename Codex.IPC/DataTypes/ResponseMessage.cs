@@ -7,7 +7,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Codex.IPC.Implementation
+namespace Codex.IPC.DataTypes
 {
     /// <summary>
     /// Message sent in response to a request.

@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Codex.IPC.Implementation
+namespace Codex.IPC.DataTypes
 {
     /// <summary>
     /// Header information for the response packet.

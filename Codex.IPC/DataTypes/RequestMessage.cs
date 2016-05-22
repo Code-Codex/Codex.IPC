@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Codex.IPC.Implementation
+namespace Codex.IPC.DataTypes
 {
     /// <summary>
     /// Message sent from the client to the server.

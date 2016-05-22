@@ -1,4 +1,4 @@
-﻿using Codex.IPC.Implementation;
+﻿using Codex.IPC.DataTypes;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
+using Codex.IPC.Contracts;
 
 namespace Codex.IPC.Server
 {
@@ -131,6 +132,7 @@ namespace Codex.IPC.Server
         /// Broadcast a message to all clients.
         /// </summary>
         /// <param name="response">Response message</param>
+        /// <remarks>Only works with duplex clients</remarks>
         public void Broadcast(ResponseMessage response)
         {
             List<string> invalidChannels = new List<string>();

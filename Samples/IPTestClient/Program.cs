@@ -1,4 +1,4 @@
-﻿using Codex.IPC.Implementation;
+﻿using Codex.IPC.DataTypes;
 using Codex.IPC.Client;
 using System;
 using System.Collections.Generic;
@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using IPCTestCommon;
 using Codex.IPC;
+using Codex.IPC.Contracts;
 
 namespace IPTestClient
 {
@@ -29,7 +30,7 @@ namespace IPTestClient
                else
             _counterType = CounterType.CPU;
 
-            if(args.Count() == 3)
+            if(args.Length == 3)
                 _counterType |= (CounterType)int.Parse(args[2]);
             ManualResetEvent resetEvent = new ManualResetEvent(false);
 
@@ -51,9 +52,9 @@ namespace IPTestClient
             _client = ClientHelper.GetDuplexClient(instanceContext,_serverProcId, BindingScheme.TCP);
             _client.Open();
             var requestMessage = new RequestMessage();
-            var registerMessage = new RegisterMessage() { Counter = _counterType };
+            var registerMessage = new RegisterMessage { Counter = _counterType };
             Trace.WriteLine(registerMessage.Counter.ToString());
-            requestMessage.SetBody<RegisterMessage>(registerMessage);
+            requestMessage.SetBody(registerMessage);
             _client.Subscribe(requestMessage);
             resetEvent.WaitOne();
             _client.Close();

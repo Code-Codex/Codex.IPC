@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Codex.IPC.Contracts;
 
 namespace Codex.IPC.Client
 {
    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-   public interface IIPCChannel : Codex.IPC.Implementation.IIPC, System.ServiceModel.IClientChannel
+   public interface IIPCChannel : IIPC, System.ServiceModel.IClientChannel
    {
    }
 
    [System.Diagnostics.DebuggerStepThroughAttribute()]
    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-   public partial class IPCClient : System.ServiceModel.ClientBase<Codex.IPC.Implementation.IIPC>, Codex.IPC.Implementation.IIPC
+   public partial class IPCClient : System.ServiceModel.ClientBase<IIPC>, IIPC
    {
 
       public IPCClient()
@@ -40,20 +41,20 @@ namespace Codex.IPC.Client
       {
       }
 
-      public Codex.IPC.Implementation.ResponseMessage Call(Codex.IPC.Implementation.RequestMessage request)
+      public Codex.IPC.DataTypes.ResponseMessage Call(Codex.IPC.DataTypes.RequestMessage request)
       {
          return base.Channel.Call(request);
       }
    }
 
    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-   public interface IIPCDuplexChannel : Codex.IPC.Implementation.IIPCDuplex, System.ServiceModel.IClientChannel
+   public interface IIPCDuplexChannel : IIPCDuplex, System.ServiceModel.IClientChannel
    {
    }
 
    [System.Diagnostics.DebuggerStepThroughAttribute()]
    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-   public partial class IPCDuplexClient : System.ServiceModel.DuplexClientBase<Codex.IPC.Implementation.IIPCDuplex>, Codex.IPC.Implementation.IIPCDuplex
+   public partial class IPCDuplexClient : System.ServiceModel.DuplexClientBase<IIPCDuplex>, IIPCDuplex
    {
 
       public IPCDuplexClient(System.ServiceModel.InstanceContext callbackInstance) :
@@ -81,17 +82,17 @@ namespace Codex.IPC.Client
       {
       }
 
-      public void Send(Codex.IPC.Implementation.RequestMessage request)
+      public void Send(Codex.IPC.DataTypes.RequestMessage request)
       {
          base.Channel.Send(request);
       }
 
-      public void Subscribe(Codex.IPC.Implementation.RequestMessage request)
+      public void Subscribe(Codex.IPC.DataTypes.RequestMessage request)
       {
          base.Channel.Subscribe(request);
       }
 
-      public void UnSubscribe(Codex.IPC.Implementation.RequestMessage request)
+      public void UnSubscribe(Codex.IPC.DataTypes.RequestMessage request)
       {
          base.Channel.UnSubscribe(request);
       }

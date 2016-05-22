@@ -6,9 +6,9 @@ using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Codex.IPC.Implementation
+namespace Codex.IPC
 {
-    public static class Helpers
+    internal static class Helpers
     {
         const int MAX_MSG_SIZE = 50000000;
 

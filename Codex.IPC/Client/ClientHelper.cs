@@ -1,5 +1,5 @@
 ﻿using Codex.IPC.Client;
-using Codex.IPC.Implementation;
+using Codex.IPC.DataTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;

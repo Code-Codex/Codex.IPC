@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Codex.IPC.Implementation
+namespace Codex.IPC
 {
     [Flags]
     public enum BindingScheme

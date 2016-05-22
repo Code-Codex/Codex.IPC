@@ -1,4 +1,4 @@
-﻿using Codex.IPC.Implementation;
+﻿using Codex.IPC.DataTypes;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,6 +9,7 @@ using System.ServiceModel.Description;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Codex.IPC.Contracts;
 
 namespace Codex.IPC.Server
 {

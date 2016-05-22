@@ -8,7 +8,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Codex.IPC.Implementation
+namespace Codex.IPC.DataTypes
 {
    /// <summary>
    /// Base class fo the messages that are exchanged between the client and the server.

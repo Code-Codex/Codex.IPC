@@ -1,4 +1,4 @@
-﻿using Codex.IPC.Implementation;
+﻿using Codex.IPC.DataTypes;
 using Codex.IPC.Server;
 using IPCTestCommon;
 using System;
@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Codex.IPC;
 
 namespace IPCTestServer
 {

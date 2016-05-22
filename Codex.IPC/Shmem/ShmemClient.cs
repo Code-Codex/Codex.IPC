@@ -59,7 +59,7 @@ namespace Codex.IPC.Shmem
         {
             using (var shmem = MemoryMappedFile.OpenExisting(shmemName))
             {
-                shmem.SetData<T>(offset,data);
+                shmem.SetData(offset,data);
             }
         }
 
@@ -74,7 +74,7 @@ namespace Codex.IPC.Shmem
         {
             using (var shmem = MemoryMappedFile.OpenExisting(shmemName))
             {
-                shmem.SetData<T>(offset, data);
+                shmem.SetData(offset, data);
             }
         }
 
@@ -90,7 +90,7 @@ namespace Codex.IPC.Shmem
         {
             using (var accesor = shmem.CreateViewAccessor())
             {
-                accesor.Write<T>(offset, ref data);
+                accesor.Write(offset, ref data);
             }
         }
 
@@ -107,8 +107,8 @@ namespace Codex.IPC.Shmem
             using (var accesor = shmem.CreateViewAccessor())
             {
                 int size = System.Runtime.InteropServices.Marshal.SizeOf<T>();
-                for (int i = 0; i < data.Count(); i++)
-                    accesor.Write<T>(offset + (size* i) , ref data[i]);
+                for (int i = 0; i < data.Length; i++)
+                    accesor.Write(offset + (size* i) , ref data[i]);
             }
         }
     }
