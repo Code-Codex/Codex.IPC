@@ -59,8 +59,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Server\IPCService.cs" />
     <Compile Include="Server\Server.cs" />
-    <Compile Include="Shmem\ShmemClient.cs" />
-    <Compile Include="Shmem\ShmemServer.cs" />
+    <Compile Include="Shmem\Shmem.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

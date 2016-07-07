@@ -1,15 +1,34 @@
-﻿using System;
+﻿using Codex.IPC.DataTypes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
-using Codex.IPC.Contracts;
 
 namespace Codex.IPC.Client
 {
    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
    public interface IIPCChannel : IIPC, System.ServiceModel.IClientChannel
    {
+   }
+
+   [ServiceContract]
+   public interface IIPC: Codex.IPC.Contracts.IIPC
+   {
+      /// <summary>
+      /// Acynchronous request response.
+      /// </summary>
+      /// <param name="request">
+      /// Request message containing 
+      /// the information regarding the request.
+      /// </param>
+      /// <returns>
+      /// Response message which contains
+      /// the output in the body.
+      /// </returns>
+      [OperationContract]
+      Task<ResponseMessage> CallAsync(RequestMessage request);
    }
 
    [System.Diagnostics.DebuggerStepThroughAttribute()]
@@ -45,16 +64,21 @@ namespace Codex.IPC.Client
       {
          return base.Channel.Call(request);
       }
+
+      public Task<Codex.IPC.DataTypes.ResponseMessage> CallAsync(Codex.IPC.DataTypes.RequestMessage request)
+      {
+         return base.Channel.CallAsync(request);
+      }
    }
 
    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-   public interface IIPCDuplexChannel : IIPCDuplex, System.ServiceModel.IClientChannel
+   public interface IIPCDuplexChannel : Codex.IPC.Contracts.IIPCDuplex, System.ServiceModel.IClientChannel
    {
    }
 
    [System.Diagnostics.DebuggerStepThroughAttribute()]
    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-   public partial class IPCDuplexClient : System.ServiceModel.DuplexClientBase<IIPCDuplex>, IIPCDuplex
+   public partial class IPCDuplexClient : System.ServiceModel.DuplexClientBase<Codex.IPC.Contracts.IIPCDuplex>, Codex.IPC.Contracts.IIPCDuplex
    {
 
       public IPCDuplexClient(System.ServiceModel.InstanceContext callbackInstance) :
