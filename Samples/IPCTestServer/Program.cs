@@ -57,7 +57,7 @@ namespace IPCTestServer
          ManualResetEvent resetEvent = (ManualResetEvent)mrevent;
          var host = new Server();
          IPCService.Instance.OnMessageRecieved += IPCService_OnMessageRecieved;
-         host.Start(resetEvent, "IPCTestServer", BindingScheme.NAMED_PIPE | BindingScheme.TCP);
+         host.Start(resetEvent, "IPCTestServer", new ConnectionOptions(), BindingScheme.NAMED_PIPE | BindingScheme.TCP);
       }
 
       static void ReplyThreadLoop()

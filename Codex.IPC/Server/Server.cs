@@ -21,23 +21,25 @@ namespace Codex.IPC.Server
       /// </summary>
       /// <param name="resetEvent">Reset event to gracefully shutdown the server.</param>
       /// <param name="processID">Base address for the process.</param>
-      /// <param name="hostName">Host name for the machine.</param>
-      public void Start(ManualResetEvent resetEvent, string processID, BindingScheme scheme, string hostName = "localhost", int tcpPort = Constants.TCP_PORT_NUMBER, int httpPort = Constants.HTTP_PORT_NUMBER)
+      /// <param name="options">Connections options for the server.</param>
+      /// <param name="scheme">Connection schemes that can be used in the server, this is a flags enum so multiple schemes can be provided.</param>
+      public void Start(ManualResetEvent resetEvent, string processID, ConnectionOptions options, BindingScheme scheme)
       {
          List<Uri> baseAddresses = new List<Uri>();
+
          if (scheme.IsBindingScheme(BindingScheme.NAMED_PIPE))
          {
-            baseAddresses.Add(new Uri(BindingScheme.NAMED_PIPE.GetEndpointAddress(processID, false, hostName, tcpPort)));
+            baseAddresses.Add(new Uri(BindingScheme.NAMED_PIPE.GetEndpointAddress(processID, options, false)));
          }
 
          if (scheme.IsBindingScheme(BindingScheme.TCP))
          {
-            baseAddresses.Add(new Uri(BindingScheme.TCP.GetEndpointAddress(processID, false, hostName, tcpPort)));
+            baseAddresses.Add(new Uri(BindingScheme.TCP.GetEndpointAddress(processID, options, false)));
          }
 
          if (scheme.IsBindingScheme(BindingScheme.HTTP))
          {
-            baseAddresses.Add(new Uri(BindingScheme.HTTP.GetEndpointAddress(processID, false, hostName, httpPort)));
+            baseAddresses.Add(new Uri(BindingScheme.HTTP.GetEndpointAddress(processID, options, false)));
          }
          using (var host = new ServiceHost(IPCService.Instance, baseAddresses.ToArray()))
          {
@@ -66,34 +68,33 @@ namespace Codex.IPC.Server
             // Setup the bindings 
             if (scheme.IsBindingScheme(BindingScheme.TCP))
             {
-               var tcpBinding = (NetTcpBinding)BindingScheme.TCP.GetBinding();
+               var tcpBinding = (NetTcpBinding)BindingScheme.TCP.GetBinding(options);
                host.AddServiceEndpoint(typeof(IIPC), tcpBinding, "");
                host.AddServiceEndpoint(typeof(IIPCDuplex), tcpBinding, "");
-
-               host.AddServiceEndpoint(typeof(IMetadataExchange), MetadataExchangeBindings.CreateMexTcpBinding(), BindingScheme.TCP.GetEndpointAddress(processID, true, hostName, tcpPort));
+               host.AddServiceEndpoint(typeof(IMetadataExchange), MetadataExchangeBindings.CreateMexTcpBinding(), BindingScheme.TCP.GetEndpointAddress(processID, options, true));
             }
 
             if (scheme.IsBindingScheme(BindingScheme.NAMED_PIPE))
             {
-               var namedPipeBinding = (NetNamedPipeBinding)BindingScheme.NAMED_PIPE.GetBinding();
+               var namedPipeBinding = (NetNamedPipeBinding)BindingScheme.NAMED_PIPE.GetBinding(options);
                host.AddServiceEndpoint(typeof(IIPC), namedPipeBinding, "");
                host.AddServiceEndpoint(typeof(IIPCDuplex), namedPipeBinding, "");
-               host.AddServiceEndpoint(typeof(IMetadataExchange), MetadataExchangeBindings.CreateMexNamedPipeBinding(), BindingScheme.NAMED_PIPE.GetEndpointAddress(processID, true, hostName, tcpPort));
+               host.AddServiceEndpoint(typeof(IMetadataExchange), MetadataExchangeBindings.CreateMexNamedPipeBinding(), BindingScheme.NAMED_PIPE.GetEndpointAddress(processID, options, true));
             }
 
             if (scheme.IsBindingScheme(BindingScheme.HTTP))
             {
-               var httpBinding = (NetHttpBinding)BindingScheme.HTTP.GetBinding();
+               var httpBinding = (NetHttpBinding)BindingScheme.HTTP.GetBinding(options);
                host.AddServiceEndpoint(typeof(IIPC), httpBinding, "");
                host.AddServiceEndpoint(typeof(IIPCDuplex), httpBinding, "");
-               host.AddServiceEndpoint(typeof(IMetadataExchange), MetadataExchangeBindings.CreateMexHttpBinding(), BindingScheme.HTTP.GetEndpointAddress(processID, true, hostName, httpPort));
+               host.AddServiceEndpoint(typeof(IMetadataExchange), MetadataExchangeBindings.CreateMexHttpBinding(), BindingScheme.HTTP.GetEndpointAddress(processID, options, true));
             }
 
             host.Open();
-            Console.WriteLine("Service up and running at:");
+            Trace.WriteLine("Service up and running at:");
             foreach (var ea in host.Description.Endpoints)
             {
-               Console.WriteLine(ea.Address);
+               Trace.WriteLine(ea.Address);
             }
 
             resetEvent.WaitOne();

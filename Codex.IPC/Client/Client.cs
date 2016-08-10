@@ -65,6 +65,11 @@ namespace Codex.IPC.Client
          return base.Channel.Call(request);
       }
 
+      public void Post(Codex.IPC.DataTypes.RequestMessage request)
+      {
+         base.Channel.Post(request);
+      }
+
       public Task<Codex.IPC.DataTypes.ResponseMessage> CallAsync(Codex.IPC.DataTypes.RequestMessage request)
       {
          return base.Channel.CallAsync(request);

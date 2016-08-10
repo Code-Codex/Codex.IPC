@@ -48,6 +48,7 @@
     <Compile Include="Contracts\IIPCDuplexCallback.cs" />
     <Compile Include="BindingScheme.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="DataTypes\ConnectionOptions.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="Contracts\IIPC.cs" />
     <Compile Include="DataTypes\MessageBase.cs" />

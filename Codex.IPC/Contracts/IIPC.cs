@@ -23,5 +23,15 @@ namespace Codex.IPC.Contracts
       /// </returns>
       [OperationContract]
       ResponseMessage Call(RequestMessage request);
+
+      /// <summary>
+      /// Non blocking message sending.
+      /// </summary>
+      /// <param name="request">
+      /// Request message containing 
+      /// the information regarding the request.
+      /// </param>
+      [OperationContract(IsOneWay = true)]
+      void Post(RequestMessage request);
    }
 }
