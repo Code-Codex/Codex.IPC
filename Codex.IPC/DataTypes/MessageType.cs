@@ -15,6 +15,6 @@ namespace Codex.IPC.DataTypes
     public enum MessageType
     {
         SUBSCRIBE = 1,
-        UNSUBSCRIBE = 2,
+        UNSUBSCRIBE = 2
     }
 }

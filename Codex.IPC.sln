@@ -1,17 +1,23 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPTestClient", "Samples\IPTestClient\IPTestClient.csproj", "{313BE7BA-BA59-41AB-8696-6948DA746BEA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPTestClient", "Samples\System Info Test\IPTestClient\IPTestClient.csproj", "{313BE7BA-BA59-41AB-8696-6948DA746BEA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPCTestServer", "Samples\IPCTestServer\IPCTestServer.csproj", "{48B775D8-BDC8-4040-AB3C-F3CD910B919D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPCTestServer", "Samples\System Info Test\IPCTestServer\IPCTestServer.csproj", "{48B775D8-BDC8-4040-AB3C-F3CD910B919D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPCTestCommon", "Samples\IPCTestCommon\IPCTestCommon.csproj", "{B3BF7B41-885C-4E49-86EC-3055A0076A11}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPCTestCommon", "Samples\System Info Test\IPCTestCommon\IPCTestCommon.csproj", "{B3BF7B41-885C-4E49-86EC-3055A0076A11}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{044434F8-8C57-4300-A69C-45BF66EAB593}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "System Info Test", "System Info Test", "{044434F8-8C57-4300-A69C-45BF66EAB593}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codex.IPC", "Codex.IPC\Codex.IPC.csproj", "{54FA73D4-AD10-48BA-BD5D-49E8A767FBE2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data Server Test", "Data Server Test", "{C5AB0D07-53AB-4C80-96A5-8DE20A1E6143}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseServer", "Samples\Data Server Test\DatabaseServer\DatabaseServer.csproj", "{CC8FAD1B-EA09-4F4D-B4EA-D0504CCE1597}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseClient", "Samples\Data Server Test\DatabaseClient\DatabaseClient.csproj", "{07A7F490-B830-425B-943D-3F7ED2518186}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +41,14 @@ Global
 		{54FA73D4-AD10-48BA-BD5D-49E8A767FBE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{54FA73D4-AD10-48BA-BD5D-49E8A767FBE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{54FA73D4-AD10-48BA-BD5D-49E8A767FBE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC8FAD1B-EA09-4F4D-B4EA-D0504CCE1597}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC8FAD1B-EA09-4F4D-B4EA-D0504CCE1597}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC8FAD1B-EA09-4F4D-B4EA-D0504CCE1597}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC8FAD1B-EA09-4F4D-B4EA-D0504CCE1597}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07A7F490-B830-425B-943D-3F7ED2518186}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07A7F490-B830-425B-943D-3F7ED2518186}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07A7F490-B830-425B-943D-3F7ED2518186}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07A7F490-B830-425B-943D-3F7ED2518186}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -43,5 +57,7 @@ Global
 		{313BE7BA-BA59-41AB-8696-6948DA746BEA} = {044434F8-8C57-4300-A69C-45BF66EAB593}
 		{48B775D8-BDC8-4040-AB3C-F3CD910B919D} = {044434F8-8C57-4300-A69C-45BF66EAB593}
 		{B3BF7B41-885C-4E49-86EC-3055A0076A11} = {044434F8-8C57-4300-A69C-45BF66EAB593}
+		{CC8FAD1B-EA09-4F4D-B4EA-D0504CCE1597} = {C5AB0D07-53AB-4C80-96A5-8DE20A1E6143}
+		{07A7F490-B830-425B-943D-3F7ED2518186} = {C5AB0D07-53AB-4C80-96A5-8DE20A1E6143}
 	EndGlobalSection
 EndGlobal
