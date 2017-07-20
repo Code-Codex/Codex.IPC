@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Codex.IPC.DataTypes
 {
    /// <summary>
-   /// Base class fo the messages that are exchanged between the client and the server.
+   /// Base class for the messages that are exchanged between the client and the server.
    /// </summary>
    [DataContract]
    public abstract class MessageBase
@@ -36,7 +36,7 @@ namespace Codex.IPC.DataTypes
          {
             BinaryFormatter formatter = new BinaryFormatter();
             formatter.Serialize(stream, data);
-            Body = Compress(stream.ToArray());
+            Body = Compress(stream);
          }
       }
 
@@ -49,7 +49,7 @@ namespace Codex.IPC.DataTypes
       /// </remarks>
       public T GetBody<T>()
       {
-         using (MemoryStream stream = new MemoryStream(Decompress(Body)))
+         using (MemoryStream stream = Decompress(Body))
          {
             BinaryFormatter formatter = new BinaryFormatter();
             return (T)formatter.Deserialize(stream);
@@ -58,50 +58,36 @@ namespace Codex.IPC.DataTypes
 
 
       /// <summary>
-      /// Compresses byte array to new byte array.
+      /// Compresses a memory stream to new byte array.
       /// </summary>
-      public static byte[] Compress(byte[] raw)
+      /// <param name="inputStream">Stream to compress</param>
+      /// <returns>Compressed data array</returns>
+      public static byte[] Compress(MemoryStream inputStream)
       {
          using (MemoryStream memory = new MemoryStream())
          {
-            using (GZipStream gzip = new GZipStream(memory,
-           CompressionMode.Compress, true))
-            {
-               gzip.Write(raw, 0, raw.Length);
-            }
+            using (DeflateStream compressedStream = new DeflateStream(memory, CompressionMode.Compress))
+               compressedStream.Write(inputStream.ToArray(), 0, (int)inputStream.Length);
             return memory.ToArray();
          }
-      }
 
+      }
 
 
       /// <summary>
       /// Decompress a byte array into object
       /// </summary>
-      /// <param name="gzip"></param>
-      /// <returns></returns>
-      public static byte[] Decompress(byte[] gzip)
+      /// <param name="input">Data to decompress</param>
+      /// <returns>Decompresses memory stream</returns>
+      public static MemoryStream Decompress(byte[] input)
       {
-         using (GZipStream stream = new GZipStream(new MemoryStream(gzip),
-                          CompressionMode.Decompress))
-         {
-            const int size = 4096;
-            byte[] buffer = new byte[size];
-            using (MemoryStream memory = new MemoryStream())
-            {
-               int count = 0;
-               do
-               {
-                  count = stream.Read(buffer, 0, size);
-                  if (count > 0)
-                  {
-                     memory.Write(buffer, 0, count);
-                  }
-               }
-               while (count > 0);
-               return memory.ToArray();
-            }
-         }
+         var output = new MemoryStream();
+         using (var compressStream = new MemoryStream(input))
+         using (var decompressor = new DeflateStream(compressStream, CompressionMode.Decompress))
+            decompressor.CopyTo(output);
+
+         output.Position = 0;
+         return output;
       }
    }
 }
