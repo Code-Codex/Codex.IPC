@@ -11,7 +11,7 @@ namespace Codex.IPC.DataTypes
    /// Header information for the request packet.
    /// </summary>
    [DataContract]
-   public class RequestMessageHeader
+   public class RequestMessageHeader : MessageHeaderBase
    {
       /// <summary>
       /// Identifier for the process on the machine.
@@ -30,6 +30,7 @@ namespace Codex.IPC.DataTypes
       public int MessageType { get; set; }
 
       public RequestMessageHeader()
+         :base(Guid.NewGuid().ToString())
       {
          ProcessID = $"{Environment.MachineName}:{System.Diagnostics.Process.GetCurrentProcess().Id}";
       }

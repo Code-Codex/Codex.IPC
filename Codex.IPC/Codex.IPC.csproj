@@ -49,6 +49,7 @@
     <Compile Include="BindingScheme.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DataTypes\ConnectionOptions.cs" />
+    <Compile Include="DataTypes\MessageHeaderBase.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="Contracts\IIPC.cs" />
     <Compile Include="DataTypes\MessageBase.cs" />

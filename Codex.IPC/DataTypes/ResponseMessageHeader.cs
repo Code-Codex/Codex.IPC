@@ -7,22 +7,23 @@ using System.Threading.Tasks;
 
 namespace Codex.IPC.DataTypes
 {
-    /// <summary>
-    /// Header information for the response packet.
-    /// </summary>
-    [DataContract]
-    public class ResponseMessageHeader
-    {
-        /// <summary>
-        /// Header information for the request packet.
-        /// </summary>
-        [DataMember]
-        public RequestMessageHeader RequestHeader { get; set; }
+   /// <summary>
+   /// Header information for the response packet.
+   /// </summary>
+   [DataContract]
+   public class ResponseMessageHeader : MessageHeaderBase
+   {
+      /// <summary>
+      /// Header information for the request packet.
+      /// </summary>
+      [DataMember]
+      public RequestMessageHeader RequestHeader { get; set; }
 
-        public ResponseMessageHeader(RequestMessageHeader requestHeader)
-        {
-            RequestHeader = requestHeader;
-        }
+      public ResponseMessageHeader(RequestMessageHeader requestHeader)
+       : base(requestHeader.MessageID)
+      {
+         RequestHeader = requestHeader;
+      }
 
-    }
+   }
 }
