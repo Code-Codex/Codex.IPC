@@ -9,7 +9,7 @@
  it adds the client to its list and strarts sending it data.
  
  The sample app uses duplex communication, so the server keeps track of all
- the connected clients and has a uilt in heartbeat to ensure the connection 
+ the connected clients and has a built in heartbeat to ensure the connection 
  is not servered due to inactivity.
  
  # To use
