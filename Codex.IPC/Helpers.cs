@@ -17,11 +17,11 @@ namespace Codex.IPC
          return (scheme & schemeToCheck) == schemeToCheck;
       }
 
-      public static string GetEndpointAddress(this BindingScheme scheme, string processID, ConnectionOptions option, bool isMex = false)
+      public static string GetEndpointAddress(this BindingScheme scheme, ConnectionOptions options, bool isMex = false)
       {
          String transport = String.Empty;
-         var serverHostName = option.HostName;
-         var port = scheme == BindingScheme.HTTP ? option.HTTPPort : option.TCPPort;
+         var serverHostName = options.HostName;
+         var port = scheme == BindingScheme.HTTP ? options.HTTPPort : options.TCPPort;
          switch (scheme)
          {
             case BindingScheme.NAMED_PIPE:
@@ -29,18 +29,18 @@ namespace Codex.IPC
                break;
             case BindingScheme.TCP:
                transport = "net.tcp";
-               serverHostName = $"{option.HostName}:{port}";
+               serverHostName = $"{options.HostName}:{port}";
                break;
             case BindingScheme.HTTP:
                transport = "http";
-               serverHostName = $"{option.HostName}:{port}";
+               serverHostName = $"{options.HostName}:{port}";
                break;
          }
 
          if (isMex)
-            return $"{transport}://{serverHostName}/Design_Time_Addresses/Codex/{processID}/mex";
+            return $"{transport}://{serverHostName}/Design_Time_Addresses/Codex/{options.ProcessID}/mex";
          else
-            return $"{transport}://{serverHostName}/Design_Time_Addresses/Codex/{processID}/IPCService";
+            return $"{transport}://{serverHostName}/Design_Time_Addresses/Codex/{options.ProcessID}/IPCService";
 
       }
 

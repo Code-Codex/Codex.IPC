@@ -18,34 +18,12 @@ namespace Codex.IPC.Server
    /// <remarks>
    /// This implements both simplex and duplex interfaces.
    /// </remarks>
-   [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, ConcurrencyMode = ConcurrencyMode.Multiple)]
-   public class IPCService : IIPC, IIPCDuplex
+   public abstract class IPCServiceBase : IIPC, IIPCDuplex
    {
       private ConcurrentDictionary<string, IIPCDuplexCallback> _subscriptions;
-      public event EventHandler<MessageRecievedEventArgs> OnMessageRecieved = delegate { };
-      private static object _syncRoot = new object();
-      private static IPCService _service = null;
 
-      /// <summary>
-      /// Singleton instance of the service.
-      /// </summary>
-      public static IPCService Instance
-      {
-         get
-         {
-            if (_service == null)
-            {
-               lock (_syncRoot)
-               {
-                  if (_service == null)
-                     _service = new IPCService();
-               }
-            }
-            return _service;
-         }
-      }
 
-      private IPCService()
+      public IPCServiceBase()
       {
          _subscriptions = new ConcurrentDictionary<string, IIPCDuplexCallback>();
       }
@@ -55,12 +33,7 @@ namespace Codex.IPC.Server
       /// </summary>
       /// <param name="request">Object representing the requested information</param>
       /// <returns>Response</returns>
-      public ResponseMessage Call(RequestMessage request)
-      {
-         var arg = new MessageRecievedEventArgs(request);
-         OnMessageRecieved(null, arg);
-         return arg.Response;
-      }
+      public abstract ResponseMessage Call(RequestMessage request);
 
       /// <summary>
       /// Send message from the client.
@@ -69,11 +42,7 @@ namespace Codex.IPC.Server
       /// <remarks>
       /// This should be used either when you need a one way notification.
       /// </remarks>
-      public void Post(RequestMessage request)
-      {
-         var arg = new MessageRecievedEventArgs(request);
-         OnMessageRecieved(null, arg);
-      }
+      public abstract void Post(RequestMessage request);
 
       /// <summary>
       /// Send message from the client.
@@ -82,12 +51,7 @@ namespace Codex.IPC.Server
       /// <remarks>
       /// This should be used either when you need a one way notification or an out of band reply.
       /// </remarks>
-      public void Send(RequestMessage request)
-      {
-         IIPCDuplexCallback callback = OperationContext.Current.GetCallbackChannel<IIPCDuplexCallback>();
-         var response = Call(request);
-         callback?.Reply(response);
-      }
+      public abstract void Send(RequestMessage request);
 
       /// <summary>
       /// Subscribe message from the client.
@@ -103,7 +67,6 @@ namespace Codex.IPC.Server
          request.Header.MessageType = (int)MessageType.SUBSCRIBE;
          if (!_subscriptions.ContainsKey(request.Header.ProcessID.ToString()))
             _subscriptions.TryAdd(request.Header.ProcessID.ToString(), callback);
-         OnMessageRecieved(null, new MessageRecievedEventArgs(request));
       }
 
 
@@ -117,7 +80,6 @@ namespace Codex.IPC.Server
          IIPCDuplexCallback notUsed = null;
          if (_subscriptions.ContainsKey(request.Header.ProcessID.ToString()))
             _subscriptions.TryRemove(request.Header.ProcessID.ToString(), out notUsed);
-         OnMessageRecieved(null, new MessageRecievedEventArgs(request));
       }
 
       /// <summary>
@@ -163,19 +125,6 @@ namespace Codex.IPC.Server
                Trace.WriteLine($"Reply to {response.Header.RequestHeader.ProcessID} failed with error: {ex.Message}");
                _subscriptions.TryRemove(replyChannel.Key, out notUsed);
             }
-         }
-
-      }
-
-      public class MessageRecievedEventArgs : EventArgs
-      {
-         public ResponseMessage Response { get; set; }
-         public RequestMessage Request { get; set; }
-
-         public MessageRecievedEventArgs(RequestMessage request)
-         {
-            Request = request;
-            Response = new ResponseMessage(Request.Header);
          }
       }
    }

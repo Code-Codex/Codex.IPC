@@ -55,8 +55,8 @@ namespace IPCTestServer
       static void ServerThreadLoop(object mrevent)
       {
          ManualResetEvent resetEvent = (ManualResetEvent)mrevent;
-         var host = new Server();
-         IPCService.Instance.OnMessageRecieved += IPCService_OnMessageRecieved;
+         var host = new ServerHoat();
+         IPCServiceBase.Instance.OnMessageRecieved += IPCService_OnMessageRecieved;
          host.Start(resetEvent, "IPCTestServer", new ConnectionOptions(), BindingScheme.NAMED_PIPE | BindingScheme.TCP);
       }
 
@@ -77,13 +77,13 @@ namespace IPCTestServer
                      {
                         var reply = new CounterData() { Type = CounterType.CPU, Value = cpu };
                         response.SetBody<CounterData>(reply);
-                        IPCService.Instance.SendReply(response.Header.RequestHeader.ProcessID.ToString(), response);
+                        IPCServiceBase.Instance.SendReply(response.Header.RequestHeader.ProcessID.ToString(), response);
                      }
                      if ((CounterType.MEMORY & client.Value.Item2) == CounterType.MEMORY)
                      {
                         var reply = new CounterData() { Type = CounterType.MEMORY, Value = ram };
                         response.SetBody<CounterData>(reply);
-                        IPCService.Instance.SendReply(response.Header.RequestHeader.ProcessID.ToString(), response);
+                        IPCServiceBase.Instance.SendReply(response.Header.RequestHeader.ProcessID.ToString(), response);
                      }
                   }
                }
@@ -93,7 +93,7 @@ namespace IPCTestServer
       }
 
 
-      private static void IPCService_OnMessageRecieved(object sender, IPCService.MessageRecievedEventArgs e)
+      private static void IPCService_OnMessageRecieved(object sender, IPCServiceBase.MessageRecievedEventArgs e)
       {
          try
          {

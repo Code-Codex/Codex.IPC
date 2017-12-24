@@ -24,7 +24,7 @@ namespace DatabaseServer
          password = ConfigurationManager.AppSettings["password"];
          serverName = ConfigurationManager.AppSettings["server"];
          ManualResetEvent resetEvent = new ManualResetEvent(false);
-         IPCService.Instance.OnMessageRecieved += Instance_OnMessageRecieved;
+         IPCServiceBase.Instance.OnMessageRecieved += Instance_OnMessageRecieved;
          _IPCServerThread = new Thread(ServerThreadLoop);
          _IPCServerThread.Start(resetEvent);
          Console.ReadLine();
@@ -34,11 +34,11 @@ namespace DatabaseServer
       static void ServerThreadLoop(object mrevent)
       {
          ManualResetEvent resetEvent = (ManualResetEvent)mrevent;
-         var host = new Server();
+         var host = new ServerHoat();
          host.Start(resetEvent, "DatabaseServer", new ConnectionOptions(), BindingScheme.NAMED_PIPE | BindingScheme.TCP);
       }
 
-      private static void Instance_OnMessageRecieved(object sender, IPCService.MessageRecievedEventArgs e)
+      private static void Instance_OnMessageRecieved(object sender, IPCServiceBase.MessageRecievedEventArgs e)
       {
          var id = e.Request.Header.ProcessID;
          var startTime = DateTime.Now;

@@ -13,35 +13,33 @@ using Codex.IPC.Contracts;
 
 namespace Codex.IPC.Server
 {
-   public class Server
+   public class ServerHost
 
    {
       /// <summary>
       /// Start the IPC server for this process.
       /// </summary>
       /// <param name="resetEvent">Reset event to gracefully shutdown the server.</param>
-      /// <param name="processID">Base address for the process.</param>
       /// <param name="options">Connections options for the server.</param>
-      /// <param name="scheme">Connection schemes that can be used in the server, this is a flags enum so multiple schemes can be provided.</param>
-      public void Start(ManualResetEvent resetEvent, string processID, ConnectionOptions options, BindingScheme scheme)
+      public void Start(Type serviceType, ManualResetEvent resetEvent, ConnectionOptions options)
       {
          List<Uri> baseAddresses = new List<Uri>();
 
-         if (scheme.IsBindingScheme(BindingScheme.NAMED_PIPE))
+         if (options.Scheme.IsBindingScheme(BindingScheme.NAMED_PIPE))
          {
-            baseAddresses.Add(new Uri(BindingScheme.NAMED_PIPE.GetEndpointAddress(processID, options, false)));
+            baseAddresses.Add(new Uri(BindingScheme.NAMED_PIPE.GetEndpointAddress(options, false)));
          }
 
-         if (scheme.IsBindingScheme(BindingScheme.TCP))
+         if (options.Scheme.IsBindingScheme(BindingScheme.TCP))
          {
-            baseAddresses.Add(new Uri(BindingScheme.TCP.GetEndpointAddress(processID, options, false)));
+            baseAddresses.Add(new Uri(BindingScheme.TCP.GetEndpointAddress(options, false)));
          }
 
-         if (scheme.IsBindingScheme(BindingScheme.HTTP))
+         if (options.Scheme.IsBindingScheme(BindingScheme.HTTP))
          {
-            baseAddresses.Add(new Uri(BindingScheme.HTTP.GetEndpointAddress(processID, options, false)));
+            baseAddresses.Add(new Uri(BindingScheme.HTTP.GetEndpointAddress(options, false)));
          }
-         using (var host = new ServiceHost(IPCService.Instance, baseAddresses.ToArray()))
+         using (var host = new ServiceHost(serviceType, baseAddresses.ToArray()))
          {
 
             // Check to see if the service host already has a ServiceMetadataBehavior
@@ -66,7 +64,7 @@ namespace Codex.IPC.Server
             }
 
             // Setup the bindings 
-            if (scheme.IsBindingScheme(BindingScheme.TCP))
+            if (options.Scheme.IsBindingScheme(BindingScheme.TCP))
             {
                var tcpBinding = (NetTcpBinding)BindingScheme.TCP.GetBinding(options);
                host.AddServiceEndpoint(typeof(IIPC), tcpBinding, "");
@@ -74,7 +72,7 @@ namespace Codex.IPC.Server
                host.AddServiceEndpoint(typeof(IMetadataExchange), MetadataExchangeBindings.CreateMexTcpBinding(), BindingScheme.TCP.GetEndpointAddress(processID, options, true));
             }
 
-            if (scheme.IsBindingScheme(BindingScheme.NAMED_PIPE))
+            if (options.Scheme.IsBindingScheme(BindingScheme.NAMED_PIPE))
             {
                var namedPipeBinding = (NetNamedPipeBinding)BindingScheme.NAMED_PIPE.GetBinding(options);
                host.AddServiceEndpoint(typeof(IIPC), namedPipeBinding, "");
@@ -82,7 +80,7 @@ namespace Codex.IPC.Server
                host.AddServiceEndpoint(typeof(IMetadataExchange), MetadataExchangeBindings.CreateMexNamedPipeBinding(), BindingScheme.NAMED_PIPE.GetEndpointAddress(processID, options, true));
             }
 
-            if (scheme.IsBindingScheme(BindingScheme.HTTP))
+            if (options.Scheme.IsBindingScheme(BindingScheme.HTTP))
             {
                var httpBinding = (NetHttpBinding)BindingScheme.HTTP.GetBinding(options);
                host.AddServiceEndpoint(typeof(IIPC), httpBinding, "");
