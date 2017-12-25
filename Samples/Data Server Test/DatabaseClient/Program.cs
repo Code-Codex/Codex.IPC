@@ -33,7 +33,7 @@ namespace DatabaseClient
             try
             {
                // Construct InstanceContext to handle messages on callback interface
-               using (var client = ClientHelper.GetClient(SERVER_PROC_ID, new ConnectionOptions()))
+               using (var client = ClientHelper.GetClient(new ConnectionOptions(SERVER_PROC_ID)))
                {
                   client.Open();
                   var msg = new RequestMessage();

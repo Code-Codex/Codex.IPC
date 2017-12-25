@@ -17,76 +17,43 @@ namespace Codex.IPC.Server
 
    {
       /// <summary>
-      /// Start the IPC server for this process.
+      /// Start the IPC server from the instance of the provided service type.
       /// </summary>
+      /// <param name="serviceClassType">Type of the ervice class to instantiate</param>
       /// <param name="resetEvent">Reset event to gracefully shutdown the server.</param>
       /// <param name="options">Connections options for the server.</param>
-      public void Start(Type serviceType, ManualResetEvent resetEvent, ConnectionOptions options)
+      public void Start(Type serviceClassType, ManualResetEvent resetEvent, ConnectionOptions options)
       {
-         List<Uri> baseAddresses = new List<Uri>();
-
-         if (options.Scheme.IsBindingScheme(BindingScheme.NAMED_PIPE))
+         List<Uri> baseAddresses = options.GetBaseAddresses();
+         using (var host = new ServiceHost(serviceClassType, baseAddresses.ToArray()))
          {
-            baseAddresses.Add(new Uri(BindingScheme.NAMED_PIPE.GetEndpointAddress(options, false)));
+            host.InitializeHost(options);
+
+            host.Open();
+            Trace.WriteLine("Service up and running at:");
+            foreach (var ea in host.Description.Endpoints)
+            {
+               Trace.WriteLine(ea.Address);
+            }
+
+            resetEvent.WaitOne();
+            host.Close();
          }
+      }
 
-         if (options.Scheme.IsBindingScheme(BindingScheme.TCP))
+
+      /// <summary>
+      /// Start the IPC server from the instance
+      /// </summary>
+      /// <param name="serviceInstance">Inaance of the service class</param>
+      /// <param name="resetEvent">Reset event to gracefully shutdown the server.</param>
+      /// <param name="options">Connections options for the server.</param>
+      public void Start(IPCServiceBase serviceInstance, ManualResetEvent resetEvent, ConnectionOptions options)
+      {
+         List<Uri> baseAddresses = options.GetBaseAddresses();
+         using (var host = new ServiceHost(serviceInstance, baseAddresses.ToArray()))
          {
-            baseAddresses.Add(new Uri(BindingScheme.TCP.GetEndpointAddress(options, false)));
-         }
-
-         if (options.Scheme.IsBindingScheme(BindingScheme.HTTP))
-         {
-            baseAddresses.Add(new Uri(BindingScheme.HTTP.GetEndpointAddress(options, false)));
-         }
-         using (var host = new ServiceHost(serviceType, baseAddresses.ToArray()))
-         {
-
-            // Check to see if the service host already has a ServiceMetadataBehavior
-            var smb = host.Description.Behaviors.Find<ServiceMetadataBehavior>();
-            // If not, add one
-            if (smb == null)
-            {
-               smb = new ServiceMetadataBehavior();
-               host.Description.Behaviors.Add(smb);
-            }
-
-            // Check to see if the service host already has a ServiceDebugBehavior
-            var sdb = host.Description.Behaviors.Find<ServiceDebugBehavior>();
-            // If not, add one
-            if (sdb == null)
-            {
-               sdb = new ServiceDebugBehavior
-               {
-                  IncludeExceptionDetailInFaults = true
-               };
-               host.Description.Behaviors.Add(sdb);
-            }
-
-            // Setup the bindings 
-            if (options.Scheme.IsBindingScheme(BindingScheme.TCP))
-            {
-               var tcpBinding = (NetTcpBinding)BindingScheme.TCP.GetBinding(options);
-               host.AddServiceEndpoint(typeof(IIPC), tcpBinding, "");
-               host.AddServiceEndpoint(typeof(IIPCDuplex), tcpBinding, "");
-               host.AddServiceEndpoint(typeof(IMetadataExchange), MetadataExchangeBindings.CreateMexTcpBinding(), BindingScheme.TCP.GetEndpointAddress(processID, options, true));
-            }
-
-            if (options.Scheme.IsBindingScheme(BindingScheme.NAMED_PIPE))
-            {
-               var namedPipeBinding = (NetNamedPipeBinding)BindingScheme.NAMED_PIPE.GetBinding(options);
-               host.AddServiceEndpoint(typeof(IIPC), namedPipeBinding, "");
-               host.AddServiceEndpoint(typeof(IIPCDuplex), namedPipeBinding, "");
-               host.AddServiceEndpoint(typeof(IMetadataExchange), MetadataExchangeBindings.CreateMexNamedPipeBinding(), BindingScheme.NAMED_PIPE.GetEndpointAddress(processID, options, true));
-            }
-
-            if (options.Scheme.IsBindingScheme(BindingScheme.HTTP))
-            {
-               var httpBinding = (NetHttpBinding)BindingScheme.HTTP.GetBinding(options);
-               host.AddServiceEndpoint(typeof(IIPC), httpBinding, "");
-               host.AddServiceEndpoint(typeof(IIPCDuplex), httpBinding, "");
-               host.AddServiceEndpoint(typeof(IMetadataExchange), MetadataExchangeBindings.CreateMexHttpBinding(), BindingScheme.HTTP.GetEndpointAddress(processID, options, true));
-            }
+            host.InitializeHost(options);
 
             host.Open();
             Trace.WriteLine("Service up and running at:");

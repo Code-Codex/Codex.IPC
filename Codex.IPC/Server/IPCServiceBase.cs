@@ -51,7 +51,13 @@ namespace Codex.IPC.Server
       /// <remarks>
       /// This should be used either when you need a one way notification or an out of band reply.
       /// </remarks>
-      public abstract void Send(RequestMessage request);
+      public void Send(RequestMessage request)
+      {
+         IIPCDuplexCallback callback = OperationContext.Current.GetCallbackChannel<IIPCDuplexCallback>();
+         var response = Call(request);
+         if (callback != null)
+            callback.Reply(response);
+      }
 
       /// <summary>
       /// Subscribe message from the client.
@@ -61,7 +67,7 @@ namespace Codex.IPC.Server
       /// The client subscribes to the events from the server.
       /// This may include client specific events or general broadcasts.
       /// </remarks>
-      public void Subscribe(RequestMessage request)
+      public virtual void Subscribe(RequestMessage request)
       {
          IIPCDuplexCallback callback = OperationContext.Current.GetCallbackChannel<IIPCDuplexCallback>();
          request.Header.MessageType = (int)MessageType.SUBSCRIBE;
@@ -74,7 +80,7 @@ namespace Codex.IPC.Server
       /// UnSubscribe message from the client.
       /// </summary>
       /// <param name="request">Object representing the requested information</param>
-      public void UnSubscribe(RequestMessage request)
+      public virtual void UnSubscribe(RequestMessage request)
       {
          request.Header.MessageType = (int)MessageType.UNSUBSCRIBE;
          IIPCDuplexCallback notUsed = null;
