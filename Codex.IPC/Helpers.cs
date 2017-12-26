@@ -4,6 +4,7 @@ using System.Linq;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
+using System.ServiceModel.Discovery;
 using System.Text;
 using System.Threading.Tasks;
 using Codex.IPC.Contracts;
@@ -24,6 +25,15 @@ namespace Codex.IPC
             host.Description.Behaviors.Add(smb);
          }
 
+         // Check to see if the service host already has a ServiceDiscoveryBehavior
+         var sdiscb = host.Description.Behaviors.Find<ServiceDiscoveryBehavior>();
+         // If not, add one
+         if (sdiscb == null)
+         {
+            sdiscb = new ServiceDiscoveryBehavior();
+            host.Description.Behaviors.Add(sdiscb);
+         }
+
          // Check to see if the service host already has a ServiceDebugBehavior
          var sdb = host.Description.Behaviors.Find<ServiceDebugBehavior>();
          // If not, add one
@@ -36,13 +46,16 @@ namespace Codex.IPC
             host.Description.Behaviors.Add(sdb);
          }
 
+
+
+         List<ServiceEndpoint> contractEndpoints = new List<ServiceEndpoint>();
          // Setup the bindings 
          if (options.Scheme.IsBindingScheme(BindingScheme.TCP))
          {
             var tcpBinding = (NetTcpBinding)BindingScheme.TCP.GetBinding(options);
             host.AddServiceEndpoint(typeof(IIPC), tcpBinding, "");
             host.AddServiceEndpoint(typeof(IIPCDuplex), tcpBinding, "");
-            host.AddServiceEndpoint(typeof(IMetadataExchange), MetadataExchangeBindings.CreateMexTcpBinding(), BindingScheme.TCP.GetEndpointAddress(options, true));
+            contractEndpoints.Add(host.AddServiceEndpoint(typeof(IMetadataExchange), MetadataExchangeBindings.CreateMexTcpBinding(), BindingScheme.TCP.GetEndpointAddress(options, true)));
          }
 
          if (options.Scheme.IsBindingScheme(BindingScheme.NAMED_PIPE))
@@ -50,7 +63,7 @@ namespace Codex.IPC
             var namedPipeBinding = (NetNamedPipeBinding)BindingScheme.NAMED_PIPE.GetBinding(options);
             host.AddServiceEndpoint(typeof(IIPC), namedPipeBinding, "");
             host.AddServiceEndpoint(typeof(IIPCDuplex), namedPipeBinding, "");
-            host.AddServiceEndpoint(typeof(IMetadataExchange), MetadataExchangeBindings.CreateMexNamedPipeBinding(), BindingScheme.NAMED_PIPE.GetEndpointAddress(options, true));
+            contractEndpoints.Add(host.AddServiceEndpoint(typeof(IMetadataExchange), MetadataExchangeBindings.CreateMexNamedPipeBinding(), BindingScheme.NAMED_PIPE.GetEndpointAddress(options, true)));
          }
 
          if (options.Scheme.IsBindingScheme(BindingScheme.HTTP))
@@ -58,7 +71,16 @@ namespace Codex.IPC
             var httpBinding = (NetHttpBinding)BindingScheme.HTTP.GetBinding(options);
             host.AddServiceEndpoint(typeof(IIPC), httpBinding, "");
             host.AddServiceEndpoint(typeof(IIPCDuplex), httpBinding, "");
-            host.AddServiceEndpoint(typeof(IMetadataExchange), MetadataExchangeBindings.CreateMexHttpBinding(), BindingScheme.HTTP.GetEndpointAddress(options, true));
+            contractEndpoints.Add(host.AddServiceEndpoint(typeof(IMetadataExchange), MetadataExchangeBindings.CreateMexHttpBinding(), BindingScheme.HTTP.GetEndpointAddress(options, true)));
+         }
+
+         host.AddServiceEndpoint(new UdpDiscoveryEndpoint(UdpDiscoveryEndpoint.DefaultIPv4MulticastAddress));
+
+         var discoveryBehavior = new EndpointDiscoveryBehavior();
+         discoveryBehavior.Scopes.Add(new Uri($"id:{options.ProcessID}"));
+         foreach (var endpoint in contractEndpoints)
+         {
+            endpoint.EndpointBehaviors.Add(discoveryBehavior);
          }
       }
       public static List<Uri> GetBaseAddresses(this ConnectionOptions options)
@@ -109,9 +131,9 @@ namespace Codex.IPC
          }
 
          if (isMex)
-            return $"{transport}://{serverHostName}/Design_Time_Addresses/Codex/{options.ProcessID}/mex";
+            return $"{transport}://{serverHostName}/Codex/{options.ProcessID}/mex";
          else
-            return $"{transport}://{serverHostName}/Design_Time_Addresses/Codex/{options.ProcessID}/IPCService";
+            return $"{transport}://{serverHostName}/Codex/{options.ProcessID}/IPCService";
 
       }
 
