@@ -25,13 +25,16 @@ namespace Codex.IPC
             host.Description.Behaviors.Add(smb);
          }
 
-         // Check to see if the service host already has a ServiceDiscoveryBehavior
-         var sdiscb = host.Description.Behaviors.Find<ServiceDiscoveryBehavior>();
-         // If not, add one
-         if (sdiscb == null)
+         if (options.EnableDiscovery)
          {
-            sdiscb = new ServiceDiscoveryBehavior();
-            host.Description.Behaviors.Add(sdiscb);
+            // Check to see if the service host already has a ServiceDiscoveryBehavior
+            var sdiscb = host.Description.Behaviors.Find<ServiceDiscoveryBehavior>();
+            // If not, add one
+            if (sdiscb == null)
+            {
+               sdiscb = new ServiceDiscoveryBehavior();
+               host.Description.Behaviors.Add(sdiscb);
+            }
          }
 
          // Check to see if the service host already has a ServiceDebugBehavior

@@ -80,6 +80,14 @@ namespace Codex.IPC.DataTypes
       public string ProcessID { get; set; }
 
       /// <summary>
+      /// Enable/Disable service discovery
+      /// </summary>
+      /// <remarks>
+      /// Discovery is turned off by default
+      /// </remarks>
+      public bool EnableDiscovery { get; set; }
+
+      /// <summary>
       /// ctor
       /// </summary>
       public ConnectionOptions(string processID)

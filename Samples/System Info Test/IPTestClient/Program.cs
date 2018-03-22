@@ -35,17 +35,18 @@ namespace IPTestClient
             _counterType |= (CounterType)int.Parse(args[2]);
          ManualResetEvent resetEvent = new ManualResetEvent(false);
 
-         var discoveryClient = new DiscoveryClient(new UdpDiscoveryEndpoint(UdpDiscoveryEndpoint.DefaultIPv4MulticastAddress));
-         var findCriteria = FindCriteria.CreateMetadataExchangeEndpointCriteria(typeof(Codex.IPC.Contracts.IIPC));
-         findCriteria.Scopes.Add(new Uri($"id:{_serverProcId}"));
-         var findResponse = discoveryClient.Find(findCriteria);
+         Console.WriteLine("Searching servers...\n");
+
+         var findResponse = ClientHelper.FindServersAsync(_serverProcId, null).Result;
 
          if (findResponse != null)
          {
-            if (findResponse.Endpoints != null)
+            foreach (var ep in findResponse.Endpoints)
             {
-               foreach (var ep in findResponse.Endpoints)
-                  Console.WriteLine(ep.Address.Uri.ToString());
+               Console.WriteLine(ep.Address.Uri.Scheme);
+               foreach (var scope in ep.Scopes)
+                  Console.WriteLine(scope.OriginalString);
+               Console.WriteLine($"{String.Join("", Enumerable.Repeat<string>("-", 50))}\n");
             }
          }
 

@@ -5,8 +5,9 @@
     "\\Codex.IPC\\Client",
     "\\Codex.IPC\\Contracts",
     "\\Codex.IPC\\DataTypes",
-    "\\Samples"
+    "\\Codex.IPC\\Server",
+    "\\Samples",
+    "\\Samples\\System Info Test"
   ],
-  "SelectedNode": "\\Codex.IPC\\DataTypes\\MessageBase.cs",
   "PreviewInSolutionExplorer": false
 }
