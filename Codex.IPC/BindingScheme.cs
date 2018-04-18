@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Codex.IPC
 {
-    [Flags]
-    public enum BindingScheme
-    {
-        TCP = 0x01,
-        HTTP = 0x02,
-        NAMED_PIPE = 0x04
-    }
+   [Flags]
+   public enum BindingScheme
+   {
+      [Description("net.tcp")]
+      TCP = 0x01,
+      [Description("http")]
+      HTTP = 0x02,
+      [Description("net.pipe")]
+      NAMED_PIPE = 0x04
+   }
 }

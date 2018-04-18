@@ -97,7 +97,7 @@ namespace Codex.IPC.DataTypes
          this.CloseTimeout = new TimeSpan(0, 1, 0);
          this.SendTimeout = new TimeSpan(0, 1, 0);
          this.ReceiveTimeout = new TimeSpan(0, 1, 0);
-         this.HostName = Constants.LOCAL_HOST;
+         this.HostName = Environment.MachineName;// Constants.LOCAL_HOST;
          this.TCPPort = Constants.TCP_PORT_NUMBER;
          this.HTTPPort = Constants.HTTP_PORT_NUMBER;
          this.Scheme = BindingScheme.NAMED_PIPE;

@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Codex.IPC;
+using CommandLine;
 
 namespace IPCTestServer
 {
@@ -20,10 +21,23 @@ namespace IPCTestServer
       static PerformanceCounter _cpuCounter;
       static PerformanceCounter _ramCounter;
       private static object _syncLock = new object();
+      public static CommandOptions _options;
 
 
-      static void Main(string[] args)
+      static int Main(string[] args)
       {
+         bool exit = false;
+         var result = Parser.Default.ParseArguments<CommandOptions>(args);
+         result.WithParsed(op => _options = op)
+               .WithNotParsed(errors =>
+               {
+                  Console.WriteLine("invalid command line params");
+                  exit = true;
+               });
+
+         if (exit)
+            return 1;
+
          ManualResetEvent resetEvent = new ManualResetEvent(false);
          _cpuCounter = new PerformanceCounter();
 
@@ -40,6 +54,7 @@ namespace IPCTestServer
 
          Console.ReadLine();
          resetEvent.Set();
+         return 0;
       }
 
       public static float getCurrentCpuUsage()
@@ -57,7 +72,26 @@ namespace IPCTestServer
          ManualResetEvent resetEvent = (ManualResetEvent)mrevent;
          var host = new ServerHost();
          SingleonIPCService.Instance.OnMessageRecieved += IPCService_OnMessageRecieved;
-         host.Start(SingleonIPCService.Instance, resetEvent, new ConnectionOptions("IPCTestServer") { Scheme = BindingScheme.NAMED_PIPE | BindingScheme.TCP, EnableDiscovery = true });
+         BindingScheme schemes = BindingScheme.NAMED_PIPE;
+         
+         foreach (var sch in _options.BindingScheme)
+         {
+            switch(sch)
+            {
+               case 't':
+                  schemes |= BindingScheme.TCP;
+                  break;
+               case 'p':
+                  schemes |= BindingScheme.NAMED_PIPE;
+                  break;
+               case 'h':
+                  schemes |= BindingScheme.HTTP;
+                  break;
+
+            }
+         }
+
+         host.Start(SingleonIPCService.Instance, resetEvent, new ConnectionOptions(_options.ServerName) { Scheme = schemes, EnableDiscovery = true });
       }
 
       static void ReplyThreadLoop()

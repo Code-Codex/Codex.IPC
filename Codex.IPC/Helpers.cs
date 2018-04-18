@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
@@ -12,9 +14,9 @@ using Codex.IPC.DataTypes;
 
 namespace Codex.IPC
 {
-   internal static class Helpers
+   public static class Helpers
    {
-      public static void InitializeHost(this ServiceHost host, ConnectionOptions options)
+      internal static void InitializeHost(this ServiceHost host, ConnectionOptions options)
       {
          // Check to see if the service host already has a ServiceMetadataBehavior
          var smb = host.Description.Behaviors.Find<ServiceMetadataBehavior>();
@@ -86,7 +88,7 @@ namespace Codex.IPC
             endpoint.EndpointBehaviors.Add(discoveryBehavior);
          }
       }
-      public static List<Uri> GetBaseAddresses(this ConnectionOptions options)
+      internal static List<Uri> GetBaseAddresses(this ConnectionOptions options)
       {
          List<Uri> baseAddresses = new List<Uri>();
 
@@ -108,12 +110,12 @@ namespace Codex.IPC
          return baseAddresses;
       }
 
-      public static bool IsBindingScheme(this BindingScheme scheme, BindingScheme schemeToCheck)
+      internal static bool IsBindingScheme(this BindingScheme scheme, BindingScheme schemeToCheck)
       {
          return (scheme & schemeToCheck) == schemeToCheck;
       }
 
-      public static string GetEndpointAddress(this BindingScheme scheme, ConnectionOptions options, bool isMex = false)
+      internal static string GetEndpointAddress(this BindingScheme scheme, ConnectionOptions options, bool isMex = false)
       {
          String transport = String.Empty;
          var serverHostName = options.HostName;
@@ -140,8 +142,7 @@ namespace Codex.IPC
 
       }
 
-
-      public static Binding GetBinding(this BindingScheme scheme, ConnectionOptions options)
+      internal static Binding GetBinding(this BindingScheme scheme, ConnectionOptions options)
       {
          Binding binding = null;
          switch (scheme)
@@ -183,6 +184,110 @@ namespace Codex.IPC
          }
 
          return binding;
+      }
+
+      public static List<ConnectionOptions> GetConnectionOptions(List<EndpointAddress> endpointAddresses)
+      {
+         List<ConnectionOptions> options = new List<ConnectionOptions>();
+         var groupedEndpoints = endpointAddresses.GroupBy(x => x.Uri.Host);
+         foreach (var hostGroup in groupedEndpoints)
+         {
+            var processGroup = hostGroup.GroupBy(x => getProcessID(x.Uri));
+            foreach (var grp in processGroup)
+            {
+               var connOption = new ConnectionOptions(grp.Key);
+               connOption.HostName = hostGroup.Key;
+               var portSchemeMap = grp.Select(x => new { scheme = GetEnumFromDescription<BindingScheme>(x.Uri.Scheme), port = x.Uri.Port });
+               connOption.Scheme = portSchemeMap.Select(x => x.scheme).Aggregate((x, y) => x | y);
+               foreach(var map in portSchemeMap)
+               {
+                  if (map.scheme == BindingScheme.TCP)
+                     connOption.TCPPort = (uint)map.port;
+                  else if (map.scheme == BindingScheme.HTTP)
+                     connOption.HTTPPort = (uint)map.port;
+               }
+               options.Add(connOption);
+            }
+         }
+
+         return options;
+      }
+
+      private static string getProcessID(Uri endpointURI)
+      {
+         return endpointURI.Segments[2].Substring(0, endpointURI.Segments[2].Length - 1);
+      }
+
+      private static MemberInfo getMemberInfoForAttribute(object value, AttributeTargets target)
+      {
+         MemberInfo info = null;
+         switch (target)
+         {
+            case AttributeTargets.Class:
+               info = value.GetType();
+               break;
+            case AttributeTargets.Field:
+               info = value.GetType().GetField(value.ToString());
+               break;
+         }
+         return info;
+      }
+
+      /// <summary>
+      /// Gets the custom attribute
+      /// </summary>
+      public static T GetCustomAttribute<T>(this object value, AttributeTargets target) where T : Attribute
+      {
+         MemberInfo info = getMemberInfoForAttribute(value, target);
+         if (info == null)
+            return null;
+         else
+            return (Attribute.GetCustomAttribute(info, typeof(T))) as T;
+      }
+
+
+      /// <summary>
+      /// Gets the custom attributes
+      /// </summary>
+      public static T[] GetCustomAttributes<T>(this object value, AttributeTargets target) where T : Attribute
+      {
+         MemberInfo info = getMemberInfoForAttribute(value, target);
+         if (info == null)
+            return null;
+         else
+            return (Attribute.GetCustomAttributes(info, typeof(T))) as T[];
+      }
+
+      /// <summary>
+      /// Gets the description from an Enum
+      /// </summary>
+      public static string GetDescription(this Enum value)
+      {
+         DescriptionAttribute attribute = value.GetCustomAttribute<DescriptionAttribute>(AttributeTargets.Field);
+         return attribute == null ? value.ToString() : attribute.Description;
+      }
+
+      /// <summary>
+      /// This method looks for the description attribute on the 
+      /// enum and finds the enum with the matching description.
+      /// </summary>
+      /// <typeparam name="T">Type of the struct</typeparam>
+      /// <param name="description">Description text for the enum value</param>
+      /// <returns>Enum value</returns>
+      public static T GetEnumFromDescription<T>(this string description) where T : struct, IConvertible
+      {
+         var type = typeof(T);
+         if (!type.IsEnum)
+            throw new ArgumentException();
+         FieldInfo[] fields = type.GetFields();
+         var field = fields
+                         .SelectMany(f => f.GetCustomAttributes(
+                             typeof(DescriptionAttribute), false),
+                             (f, a) => new { Field = f, Att = a })
+                             .SingleOrDefault(a => String.Equals(((DescriptionAttribute)a.Att).Description,description,StringComparison.OrdinalIgnoreCase));
+         if (field == null)
+            throw new ArgumentException($"Enum with description ({description}) not found");
+         return (T)field.Field.GetRawConstantValue();
       }
    }
 }

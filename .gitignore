@@ -219,3 +219,4 @@ pip-log.txt
 .mr.developer.cfg
 /Samples/Data Server Test/Output
 /Samples/System Info Test/Output
+/packages

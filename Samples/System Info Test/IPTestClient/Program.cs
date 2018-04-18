@@ -22,6 +22,7 @@ namespace IPTestClient
       static IPCDuplexClient _client;
       static string _serverProcId;
       static CounterType _counterType;
+      static ManualResetEvent resetEvent;
 
       static void Main(string[] args)
       {
@@ -33,7 +34,8 @@ namespace IPTestClient
 
          if (args.Length == 3)
             _counterType |= (CounterType)int.Parse(args[2]);
-         ManualResetEvent resetEvent = new ManualResetEvent(false);
+
+         resetEvent = new ManualResetEvent(false);
 
          Console.WriteLine("Searching servers...\n");
 
@@ -41,31 +43,32 @@ namespace IPTestClient
 
          if (findResponse != null)
          {
-            foreach (var ep in findResponse.Endpoints)
+            var options = Helpers.GetConnectionOptions(findResponse.Endpoints.Select(x => x.Address).ToList());
+            int index = 1;
+            foreach(var opt in options)
             {
-               Console.WriteLine(ep.Address.Uri.Scheme);
-               foreach (var scope in ep.Scopes)
-                  Console.WriteLine(scope.OriginalString);
-               Console.WriteLine($"{String.Join("", Enumerable.Repeat<string>("-", 50))}\n");
+               Console.WriteLine($"{index}. Host: {opt.HostName}");
+               index++;
+            }
+
+            Console.Write("Select the index of server to connect to: ");
+            if (int.TryParse(Console.ReadLine(), out int selectedIndex))
+            {
+               _IPCClientThread = new Thread(ClientThreadLoop);
+               _IPCClientThread.Start(options[selectedIndex-1]);
             }
          }
-
-         _IPCClientThread = new Thread(ClientThreadLoop);
-         _IPCClientThread.Start(resetEvent);
-
-
 
          Console.ReadLine();
          resetEvent.Set();
       }
 
 
-      static void ClientThreadLoop(object mrevent)
+      static void ClientThreadLoop(object connOptions)
       {
-         ManualResetEvent resetEvent = (ManualResetEvent)mrevent;
          // Construct InstanceContext to handle messages on callback interface
          InstanceContext instanceContext = new InstanceContext(new CallbackHandler());
-         _client = ClientHelper.GetDuplexClient(instanceContext, new ConnectionOptions(_serverProcId), BindingScheme.TCP);
+         _client = ClientHelper.GetDuplexClient(instanceContext, (ConnectionOptions)connOptions, BindingScheme.TCP);
          _client.Open();
          var requestMessage = new RequestMessage();
          var registerMessage = new RegisterMessage { Counter = _counterType };
