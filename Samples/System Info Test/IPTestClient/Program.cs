@@ -12,6 +12,7 @@ using IPCTestCommon;
 using Codex.IPC;
 using Codex.IPC.Contracts;
 using System.ServiceModel.Discovery;
+using CommandLine;
 
 namespace IPTestClient
 {
@@ -24,16 +25,37 @@ namespace IPTestClient
       static CounterType _counterType;
       static ManualResetEvent resetEvent;
 
-      static void Main(string[] args)
+      static int Main(string[] args)
       {
          _serverProcId = "IPCTestServer";
-         if (args.Any())
-            _counterType = (CounterType)int.Parse(args[0]);
-         else
-            _counterType = CounterType.CPU;
+         bool exit = false;
+         var result = Parser.Default.ParseArguments<CommandOptions>(args);
+         result.WithParsed(op =>
+         {
+            switch(op.CounterType)
+            {
+               case 'c':
+               case 'C':
+                  _counterType = CounterType.CPU;
+                  break;
+               case 'm':
+               case 'M':
+                  _counterType = CounterType.MEMORY;
+                  break;
+               case 'a':
+               case 'A':
+                  _counterType = CounterType.CPU | CounterType.MEMORY;
+                  break;
+            }
+         })
+         .WithNotParsed(errors =>
+         {
+            Console.WriteLine("invalid command line params");
+            exit = true;
+         });
 
-         if (args.Length == 3)
-            _counterType |= (CounterType)int.Parse(args[2]);
+         if (exit)
+            return 1;
 
          resetEvent = new ManualResetEvent(false);
 
@@ -45,7 +67,7 @@ namespace IPTestClient
          {
             var options = Helpers.GetConnectionOptions(findResponse.Endpoints.Select(x => x.Address).ToList());
             int index = 1;
-            foreach(var opt in options)
+            foreach (var opt in options)
             {
                Console.WriteLine($"{index}. Host: {opt.HostName}");
                index++;
@@ -55,12 +77,13 @@ namespace IPTestClient
             if (int.TryParse(Console.ReadLine(), out int selectedIndex))
             {
                _IPCClientThread = new Thread(ClientThreadLoop);
-               _IPCClientThread.Start(options[selectedIndex-1]);
+               _IPCClientThread.Start(options[selectedIndex - 1]);
             }
          }
 
          Console.ReadLine();
          resetEvent.Set();
+         return 0;
       }
 
 
@@ -87,7 +110,7 @@ namespace IPTestClient
       public void Reply(ResponseMessage response)
       {
          var data = response.GetBody<CounterData>();
-         Console.WriteLine($"{data.Type} - {data.Value}");
+         Console.WriteLine($"{data.Type,-10} - {data.Value * 100} %");
       }
    }
 }
