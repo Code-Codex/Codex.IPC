@@ -41,6 +41,9 @@ local.properties
 *.user
 *.sln.docstates
 
+# Visual Studio temp something
+.vs/
+
 # Build results
 
 [Dd]ebug/
@@ -216,3 +219,4 @@ pip-log.txt
 .mr.developer.cfg
 /Samples/Data Server Test/Output
 /Samples/System Info Test/Output
+/packages

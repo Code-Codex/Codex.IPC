@@ -69,17 +69,38 @@ namespace Codex.IPC.DataTypes
       public uint HTTPPort { get; set; }
 
       /// <summary>
+      /// Connection schemes that can be used in the server,
+      /// this is a flags enum so multiple schemes can be provided.
+      /// </summary>
+      public BindingScheme Scheme { get; set; }
+
+      /// <summary>
+      /// Base address for the process.
+      /// </summary>
+      public string ProcessID { get; set; }
+
+      /// <summary>
+      /// Enable/Disable service discovery
+      /// </summary>
+      /// <remarks>
+      /// Discovery is turned off by default
+      /// </remarks>
+      public bool EnableDiscovery { get; set; }
+
+      /// <summary>
       /// ctor
       /// </summary>
-      public ConnectionOptions()
+      public ConnectionOptions(string processID)
       {
+         this.ProcessID = processID;
          this.OpenTimeout = new TimeSpan(0, 1, 0);
          this.CloseTimeout = new TimeSpan(0, 1, 0);
          this.SendTimeout = new TimeSpan(0, 1, 0);
          this.ReceiveTimeout = new TimeSpan(0, 1, 0);
-         this.HostName = Constants.LOCAL_HOST;
+         this.HostName = Environment.MachineName;// Constants.LOCAL_HOST;
          this.TCPPort = Constants.TCP_PORT_NUMBER;
          this.HTTPPort = Constants.HTTP_PORT_NUMBER;
+         this.Scheme = BindingScheme.NAMED_PIPE;
       }
    }
 }

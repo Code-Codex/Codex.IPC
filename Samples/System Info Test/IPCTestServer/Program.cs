@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Codex.IPC;
+using CommandLine;
 
 namespace IPCTestServer
 {
@@ -20,10 +21,23 @@ namespace IPCTestServer
       static PerformanceCounter _cpuCounter;
       static PerformanceCounter _ramCounter;
       private static object _syncLock = new object();
+      public static CommandOptions _options;
 
 
-      static void Main(string[] args)
+      static int Main(string[] args)
       {
+         bool exit = false;
+         var result = Parser.Default.ParseArguments<CommandOptions>(args);
+         result.WithParsed(op => _options = op)
+               .WithNotParsed(errors =>
+               {
+                  Console.WriteLine("invalid command line params");
+                  exit = true;
+               });
+
+         if (exit)
+            return 1;
+
          ManualResetEvent resetEvent = new ManualResetEvent(false);
          _cpuCounter = new PerformanceCounter();
 
@@ -40,6 +54,7 @@ namespace IPCTestServer
 
          Console.ReadLine();
          resetEvent.Set();
+         return 0;
       }
 
       public static float getCurrentCpuUsage()
@@ -55,9 +70,28 @@ namespace IPCTestServer
       static void ServerThreadLoop(object mrevent)
       {
          ManualResetEvent resetEvent = (ManualResetEvent)mrevent;
-         var host = new Server();
-         IPCService.Instance.OnMessageRecieved += IPCService_OnMessageRecieved;
-         host.Start(resetEvent, "IPCTestServer", new ConnectionOptions(), BindingScheme.NAMED_PIPE | BindingScheme.TCP);
+         var host = new ServerHost();
+         SingleonIPCService.Instance.OnMessageRecieved += IPCService_OnMessageRecieved;
+         BindingScheme schemes = BindingScheme.NAMED_PIPE;
+         
+         foreach (var sch in _options.BindingScheme)
+         {
+            switch(sch)
+            {
+               case 't':
+                  schemes |= BindingScheme.TCP;
+                  break;
+               case 'p':
+                  schemes |= BindingScheme.NAMED_PIPE;
+                  break;
+               case 'h':
+                  schemes |= BindingScheme.HTTP;
+                  break;
+
+            }
+         }
+
+         host.Start(SingleonIPCService.Instance, resetEvent, new ConnectionOptions(_options.ServerName) { Scheme = schemes, EnableDiscovery = true });
       }
 
       static void ReplyThreadLoop()
@@ -77,13 +111,13 @@ namespace IPCTestServer
                      {
                         var reply = new CounterData() { Type = CounterType.CPU, Value = cpu };
                         response.SetBody<CounterData>(reply);
-                        IPCService.Instance.SendReply(response.Header.RequestHeader.ProcessID.ToString(), response);
+                        SingleonIPCService.Instance.SendReply(response.Header.RequestHeader.ProcessID.ToString(), response);
                      }
                      if ((CounterType.MEMORY & client.Value.Item2) == CounterType.MEMORY)
                      {
                         var reply = new CounterData() { Type = CounterType.MEMORY, Value = ram };
                         response.SetBody<CounterData>(reply);
-                        IPCService.Instance.SendReply(response.Header.RequestHeader.ProcessID.ToString(), response);
+                        SingleonIPCService.Instance.SendReply(response.Header.RequestHeader.ProcessID.ToString(), response);
                      }
                   }
                }
@@ -93,7 +127,7 @@ namespace IPCTestServer
       }
 
 
-      private static void IPCService_OnMessageRecieved(object sender, IPCService.MessageRecievedEventArgs e)
+      private static void IPCService_OnMessageRecieved(object sender, SingleonIPCService.MessageRecievedEventArgs e)
       {
          try
          {
