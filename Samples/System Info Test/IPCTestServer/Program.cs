@@ -84,9 +84,6 @@ namespace IPCTestServer
                case 'p':
                   schemes |= BindingScheme.NAMED_PIPE;
                   break;
-               case 'h':
-                  schemes |= BindingScheme.HTTP;
-                  break;
 
             }
          }

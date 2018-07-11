@@ -12,9 +12,7 @@ namespace Codex.IPC
    {
       [Description("net.tcp")]
       TCP = 0x01,
-      [Description("http")]
-      HTTP = 0x02,
       [Description("net.pipe")]
-      NAMED_PIPE = 0x04
+      NAMED_PIPE = 0x02
    }
 }

@@ -1,5 +1,6 @@
 ﻿using Codex.IPC.Client;
 using Codex.IPC.DataTypes;
+using Codex.IPC.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace Codex.IPC
       /// </summary>
       /// <param name="options">Connection Options</param>
       /// <returns>Client object.</returns>
-      public static IPCClient GetClient(ConnectionOptions options, BindingScheme scheme = BindingScheme.NAMED_PIPE)
+      public static IPCClient GetClient(IConnectionOptions options, BindingScheme scheme = BindingScheme.NAMED_PIPE)
       {
          return new IPCClient(scheme.GetBinding(options), new EndpointAddress(scheme.GetEndpointAddress(options, false)));
       }
@@ -30,7 +31,7 @@ namespace Codex.IPC
       /// </summary>
       /// <param name="options">Connection Options</param>
       /// <returns>Client object.</returns>
-      public static IPCDuplexClient GetDuplexClient(InstanceContext context, ConnectionOptions options, BindingScheme scheme = BindingScheme.NAMED_PIPE)
+      public static IPCDuplexClient GetDuplexClient(InstanceContext context, IConnectionOptions options, BindingScheme scheme = BindingScheme.NAMED_PIPE)
       {
          return new IPCDuplexClient(context, scheme.GetBinding(options), new EndpointAddress(scheme.GetEndpointAddress(options, false)));
       }
@@ -45,11 +46,11 @@ namespace Codex.IPC
       {
          var discoveryClient = new DiscoveryClient(new UdpDiscoveryEndpoint(UdpDiscoveryEndpoint.DefaultIPv4MulticastAddress));
          var findCriteria = FindCriteria.CreateMetadataExchangeEndpointCriteria(typeof(IIPC));
-         findCriteria.Scopes.Add(new Uri($"id:{serverId}"));
+         findCriteria.Scopes.Add(new Uri($"id:{serverId}".ToLower()));
          if(filterCriteria != null)
          {
             foreach(var entry in filterCriteria)
-               findCriteria.Scopes.Add(new Uri($"{entry.Key}:{entry.Value}"));
+               findCriteria.Scopes.Add(new Uri($"{entry.Key}:{entry.Value}".ToLower()));
          }
 
          return await discoveryClient.FindTaskAsync(findCriteria);

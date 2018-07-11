@@ -1,17 +1,12 @@
-﻿using Codex.IPC.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Codex.IPC.DataTypes
+namespace Codex.IPC.Interfaces
 {
-   /// <summary>
-   /// Options which are used to establish 
-   /// connections between the client and the server.
-   /// </summary>
-   public class ConnectionOptions : IConnectionOptions
+   public interface IConnectionOptions
    {
       /// <summary>
       /// Timeout for opening the connection.
@@ -19,7 +14,7 @@ namespace Codex.IPC.DataTypes
       /// <remarks>
       /// Default is 1 minute.
       /// </remarks>
-      public TimeSpan OpenTimeout { get; set; }
+      TimeSpan OpenTimeout { get; }
 
       /// <summary>
       /// Timeout for closing the connection.
@@ -27,7 +22,7 @@ namespace Codex.IPC.DataTypes
       /// <remarks>
       /// Default is 1 minute.
       /// </remarks>
-      public TimeSpan CloseTimeout { get; set; }
+      TimeSpan CloseTimeout { get; }
 
       /// <summary>
       /// Timeout for sending data over the opened connection.
@@ -35,7 +30,7 @@ namespace Codex.IPC.DataTypes
       /// <remarks>
       /// Default is 1 minute.
       /// </remarks>
-      public TimeSpan SendTimeout { get; set; }
+      TimeSpan SendTimeout { get; }
 
       /// <summary>
       /// Timeout for receiving data over the opened connection.
@@ -43,7 +38,7 @@ namespace Codex.IPC.DataTypes
       /// <remarks>
       /// Default is 1 minute.
       /// </remarks>
-      public TimeSpan ReceiveTimeout { get; set; }
+      TimeSpan ReceiveTimeout { get; }
 
       /// <summary>
       /// Name of the host to connect to.
@@ -51,7 +46,7 @@ namespace Codex.IPC.DataTypes
       /// <remarks>
       /// Default is localhost.
       /// </remarks>
-      public string HostName { get; set; }
+      string HostName { get; }
 
       /// <summary>
       /// Port to use for TCP connections
@@ -59,32 +54,18 @@ namespace Codex.IPC.DataTypes
       /// <remarks>
       /// Default is 64000.
       /// </remarks>
-      public uint TCPPort { get; set; }
+      uint TCPPort { get; }
 
       /// <summary>
       /// Connection schemes that can be used in the server,
       /// this is a flags enum so multiple schemes can be provided.
       /// </summary>
-      public BindingScheme Scheme { get; set; }
+      BindingScheme Scheme { get; }
 
       /// <summary>
       /// Base address for the process.
       /// </summary>
-      public string ProcessID { get; private set; }
+      string ProcessID { get; }
 
-      /// <summary>
-      /// ctor
-      /// </summary>
-      public ConnectionOptions(string processID)
-      {
-         this.ProcessID = processID;
-         this.OpenTimeout = new TimeSpan(0, 1, 0);
-         this.CloseTimeout = new TimeSpan(0, 1, 0);
-         this.SendTimeout = new TimeSpan(0, 1, 0);
-         this.ReceiveTimeout = new TimeSpan(0, 1, 0);
-         this.HostName = Environment.MachineName;
-         this.TCPPort = Constants.TCP_PORT_NUMBER;
-         this.Scheme = BindingScheme.NAMED_PIPE;
-      }
    }
 }

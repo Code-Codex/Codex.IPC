@@ -22,7 +22,7 @@ namespace Codex.IPC.Server
       /// <param name="serviceClassType">Type of the ervice class to instantiate</param>
       /// <param name="resetEvent">Reset event to gracefully shutdown the server.</param>
       /// <param name="options">Connections options for the server.</param>
-      public void Start(Type serviceClassType, ManualResetEvent resetEvent, ConnectionOptions options)
+      public void Start(Type serviceClassType, ManualResetEvent resetEvent, ServerOptions options)
       {
          List<Uri> baseAddresses = options.GetBaseAddresses();
          using (var host = new ServiceHost(serviceClassType, baseAddresses.ToArray()))
@@ -48,7 +48,7 @@ namespace Codex.IPC.Server
       /// <param name="serviceInstance">Inaance of the service class</param>
       /// <param name="resetEvent">Reset event to gracefully shutdown the server.</param>
       /// <param name="options">Connections options for the server.</param>
-      public void Start(IPCServiceBase serviceInstance, ManualResetEvent resetEvent, ConnectionOptions options)
+      public void Start(IPCServiceBase serviceInstance, ManualResetEvent resetEvent, ServerOptions options)
       {
          List<Uri> baseAddresses = options.GetBaseAddresses();
          using (var host = new ServiceHost(serviceInstance, baseAddresses.ToArray()))

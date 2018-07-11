@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Codex.IPC.Contracts;
+using Codex.IPC.DataTypes;
+using Codex.IPC.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -7,19 +10,15 @@ using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 using System.ServiceModel.Discovery;
-using System.Text;
-using System.Threading.Tasks;
-using Codex.IPC.Contracts;
-using Codex.IPC.DataTypes;
 
 namespace Codex.IPC
 {
    public static class Helpers
    {
-      internal static void InitializeHost(this ServiceHost host, ConnectionOptions options)
+      internal static void InitializeHost(this ServiceHost host, ServerOptions options)
       {
          // Check to see if the service host already has a ServiceMetadataBehavior
-         var smb = host.Description.Behaviors.Find<ServiceMetadataBehavior>();
+         ServiceMetadataBehavior smb = host.Description.Behaviors.Find<ServiceMetadataBehavior>();
          // If not, add one
          if (smb == null)
          {
@@ -30,7 +29,7 @@ namespace Codex.IPC
          if (options.EnableDiscovery)
          {
             // Check to see if the service host already has a ServiceDiscoveryBehavior
-            var sdiscb = host.Description.Behaviors.Find<ServiceDiscoveryBehavior>();
+            ServiceDiscoveryBehavior sdiscb = host.Description.Behaviors.Find<ServiceDiscoveryBehavior>();
             // If not, add one
             if (sdiscb == null)
             {
@@ -40,7 +39,7 @@ namespace Codex.IPC
          }
 
          // Check to see if the service host already has a ServiceDebugBehavior
-         var sdb = host.Description.Behaviors.Find<ServiceDebugBehavior>();
+         ServiceDebugBehavior sdb = host.Description.Behaviors.Find<ServiceDebugBehavior>();
          // If not, add one
          if (sdb == null)
          {
@@ -57,7 +56,7 @@ namespace Codex.IPC
          // Setup the bindings 
          if (options.Scheme.IsBindingScheme(BindingScheme.TCP))
          {
-            var tcpBinding = (NetTcpBinding)BindingScheme.TCP.GetBinding(options);
+            NetTcpBinding tcpBinding = (NetTcpBinding)BindingScheme.TCP.GetBinding(options);
             host.AddServiceEndpoint(typeof(IIPC), tcpBinding, "");
             host.AddServiceEndpoint(typeof(IIPCDuplex), tcpBinding, "");
             contractEndpoints.Add(host.AddServiceEndpoint(typeof(IMetadataExchange), MetadataExchangeBindings.CreateMexTcpBinding(), BindingScheme.TCP.GetEndpointAddress(options, true)));
@@ -65,30 +64,30 @@ namespace Codex.IPC
 
          if (options.Scheme.IsBindingScheme(BindingScheme.NAMED_PIPE))
          {
-            var namedPipeBinding = (NetNamedPipeBinding)BindingScheme.NAMED_PIPE.GetBinding(options);
+            NetNamedPipeBinding namedPipeBinding = (NetNamedPipeBinding)BindingScheme.NAMED_PIPE.GetBinding(options);
             host.AddServiceEndpoint(typeof(IIPC), namedPipeBinding, "");
             host.AddServiceEndpoint(typeof(IIPCDuplex), namedPipeBinding, "");
             contractEndpoints.Add(host.AddServiceEndpoint(typeof(IMetadataExchange), MetadataExchangeBindings.CreateMexNamedPipeBinding(), BindingScheme.NAMED_PIPE.GetEndpointAddress(options, true)));
          }
 
-         if (options.Scheme.IsBindingScheme(BindingScheme.HTTP))
+         if (options.EnableDiscovery)
          {
-            var httpBinding = (NetHttpBinding)BindingScheme.HTTP.GetBinding(options);
-            host.AddServiceEndpoint(typeof(IIPC), httpBinding, "");
-            host.AddServiceEndpoint(typeof(IIPCDuplex), httpBinding, "");
-            contractEndpoints.Add(host.AddServiceEndpoint(typeof(IMetadataExchange), MetadataExchangeBindings.CreateMexHttpBinding(), BindingScheme.HTTP.GetEndpointAddress(options, true)));
-         }
+            host.AddServiceEndpoint(new UdpDiscoveryEndpoint(UdpDiscoveryEndpoint.DefaultIPv4MulticastAddress));
 
-         host.AddServiceEndpoint(new UdpDiscoveryEndpoint(UdpDiscoveryEndpoint.DefaultIPv4MulticastAddress));
+            EndpointDiscoveryBehavior discoveryBehavior = new EndpointDiscoveryBehavior();
+            discoveryBehavior.Scopes.Add(new Uri($"id:{options.ProcessID}".ToLower()));
+            foreach (KeyValuePair<string, string> scope in options.Scopes)
+            {
+               discoveryBehavior.Scopes.Add(new Uri($"{scope.Key}:{scope.Value}".ToLower()));
+            }
 
-         var discoveryBehavior = new EndpointDiscoveryBehavior();
-         discoveryBehavior.Scopes.Add(new Uri($"id:{options.ProcessID}"));
-         foreach (var endpoint in contractEndpoints)
-         {
-            endpoint.EndpointBehaviors.Add(discoveryBehavior);
+            foreach (ServiceEndpoint endpoint in contractEndpoints)
+            {
+               endpoint.EndpointBehaviors.Add(discoveryBehavior);
+            }
          }
       }
-      internal static List<Uri> GetBaseAddresses(this ConnectionOptions options)
+      internal static List<Uri> GetBaseAddresses(this IConnectionOptions options)
       {
          List<Uri> baseAddresses = new List<Uri>();
 
@@ -102,11 +101,6 @@ namespace Codex.IPC
             baseAddresses.Add(new Uri(BindingScheme.TCP.GetEndpointAddress(options, false)));
          }
 
-         if (options.Scheme.IsBindingScheme(BindingScheme.HTTP))
-         {
-            baseAddresses.Add(new Uri(BindingScheme.HTTP.GetEndpointAddress(options, false)));
-         }
-
          return baseAddresses;
       }
 
@@ -115,11 +109,10 @@ namespace Codex.IPC
          return (scheme & schemeToCheck) == schemeToCheck;
       }
 
-      internal static string GetEndpointAddress(this BindingScheme scheme, ConnectionOptions options, bool isMex = false)
+      internal static string GetEndpointAddress(this BindingScheme scheme, IConnectionOptions options, bool isMex = false)
       {
-         String transport = String.Empty;
-         var serverHostName = options.HostName;
-         var port = scheme == BindingScheme.HTTP ? options.HTTPPort : options.TCPPort;
+         string transport = string.Empty;
+         string serverHostName = options.HostName;
          switch (scheme)
          {
             case BindingScheme.NAMED_PIPE:
@@ -127,22 +120,21 @@ namespace Codex.IPC
                break;
             case BindingScheme.TCP:
                transport = "net.tcp";
-               serverHostName = $"{options.HostName}:{port}";
-               break;
-            case BindingScheme.HTTP:
-               transport = "http";
-               serverHostName = $"{options.HostName}:{port}";
+               serverHostName = $"{options.HostName}:{options.TCPPort}";
                break;
          }
 
          if (isMex)
+         {
             return $"{transport}://{serverHostName}/Codex/{options.ProcessID}/mex";
+         }
          else
+         {
             return $"{transport}://{serverHostName}/Codex/{options.ProcessID}/IPCService";
-
+         }
       }
 
-      internal static Binding GetBinding(this BindingScheme scheme, ConnectionOptions options)
+      internal static Binding GetBinding(this BindingScheme scheme, IConnectionOptions options)
       {
          Binding binding = null;
          switch (scheme)
@@ -150,7 +142,7 @@ namespace Codex.IPC
             case BindingScheme.TCP:
                {
                   binding = new NetTcpBinding(SecurityMode.None);
-                  var tcpBinding = ((NetTcpBinding)binding);
+                  NetTcpBinding tcpBinding = ((NetTcpBinding)binding);
                   tcpBinding.MaxBufferPoolSize = Constants.MAX_MSG_SIZE;
                   tcpBinding.MaxReceivedMessageSize = Constants.MAX_MSG_SIZE;
                   break;
@@ -158,19 +150,9 @@ namespace Codex.IPC
             case BindingScheme.NAMED_PIPE:
                {
                   binding = new NetNamedPipeBinding(NetNamedPipeSecurityMode.None);
-                  var npBinding = ((NetNamedPipeBinding)binding);
+                  NetNamedPipeBinding npBinding = ((NetNamedPipeBinding)binding);
                   npBinding.MaxBufferPoolSize = Constants.MAX_MSG_SIZE;
                   npBinding.MaxReceivedMessageSize = Constants.MAX_MSG_SIZE;
-                  break;
-               }
-            case BindingScheme.HTTP:
-               {
-                  binding = new NetHttpBinding(BasicHttpSecurityMode.None);
-                  var httpBinding = ((NetHttpBinding)binding);
-                  httpBinding.MaxBufferPoolSize = Constants.MAX_MSG_SIZE;
-                  httpBinding.MaxReceivedMessageSize = Constants.MAX_MSG_SIZE;
-                  httpBinding.WebSocketSettings.TransportUsage = WebSocketTransportUsage.Always;
-                  httpBinding.MessageEncoding = NetHttpMessageEncoding.Text;
                   break;
                }
          }
@@ -186,25 +168,29 @@ namespace Codex.IPC
          return binding;
       }
 
-      public static List<ConnectionOptions> GetConnectionOptions(List<EndpointAddress> endpointAddresses)
+
+      /// <summary>
+      /// Get the options to connect to the server based on the exposed endpoints
+      /// </summary>
+      public static List<IConnectionOptions> GetConnectionOptions(IEnumerable<EndpointAddress> endpointAddresses)
       {
-         List<ConnectionOptions> options = new List<ConnectionOptions>();
-         var groupedEndpoints = endpointAddresses.GroupBy(x => x.Uri.Host);
-         foreach (var hostGroup in groupedEndpoints)
+         List<IConnectionOptions> options = new List<IConnectionOptions>();
+         IEnumerable<IGrouping<string, EndpointAddress>> groupedEndpoints = endpointAddresses.GroupBy(x => x.Uri.Host);
+         foreach (IGrouping<string, EndpointAddress> hostGroup in groupedEndpoints)
          {
-            var processGroup = hostGroup.GroupBy(x => getProcessID(x.Uri));
-            foreach (var grp in processGroup)
+            IEnumerable<IGrouping<string, EndpointAddress>> processGroup = hostGroup.GroupBy(x => getProcessID(x.Uri));
+            foreach (IGrouping<string, EndpointAddress> grp in processGroup)
             {
-               var connOption = new ConnectionOptions(grp.Key);
+               ConnectionOptions connOption = new ConnectionOptions(grp.Key);
                connOption.HostName = hostGroup.Key;
                var portSchemeMap = grp.Select(x => new { scheme = GetEnumFromDescription<BindingScheme>(x.Uri.Scheme), port = x.Uri.Port });
                connOption.Scheme = portSchemeMap.Select(x => x.scheme).Aggregate((x, y) => x | y);
-               foreach(var map in portSchemeMap)
+               foreach (var map in portSchemeMap)
                {
                   if (map.scheme == BindingScheme.TCP)
+                  {
                      connOption.TCPPort = (uint)map.port;
-                  else if (map.scheme == BindingScheme.HTTP)
-                     connOption.HTTPPort = (uint)map.port;
+                  }
                }
                options.Add(connOption);
             }
@@ -213,6 +199,18 @@ namespace Codex.IPC
          return options;
       }
 
+
+      /// <summary>
+      /// Get the options to connect to the server based on the discovery result
+      /// </summary>
+      public static List<IConnectionOptions> GetConnectionOptions(FindResponse searchResponse)
+      {
+         return Helpers.GetConnectionOptions(searchResponse.Endpoints.Select(x => x.Address));
+      }
+
+      /// <summary>
+      /// Parse the process identifier from the endpoint URI
+      /// </summary>
       private static string getProcessID(Uri endpointURI)
       {
          return endpointURI.Segments[2].Substring(0, endpointURI.Segments[2].Length - 1);
@@ -240,9 +238,13 @@ namespace Codex.IPC
       {
          MemberInfo info = getMemberInfoForAttribute(value, target);
          if (info == null)
+         {
             return null;
+         }
          else
+         {
             return (Attribute.GetCustomAttribute(info, typeof(T))) as T;
+         }
       }
 
 
@@ -253,9 +255,13 @@ namespace Codex.IPC
       {
          MemberInfo info = getMemberInfoForAttribute(value, target);
          if (info == null)
+         {
             return null;
+         }
          else
+         {
             return (Attribute.GetCustomAttributes(info, typeof(T))) as T[];
+         }
       }
 
       /// <summary>
@@ -276,17 +282,23 @@ namespace Codex.IPC
       /// <returns>Enum value</returns>
       public static T GetEnumFromDescription<T>(this string description) where T : struct, IConvertible
       {
-         var type = typeof(T);
+         Type type = typeof(T);
          if (!type.IsEnum)
+         {
             throw new ArgumentException();
+         }
+
          FieldInfo[] fields = type.GetFields();
          var field = fields
                          .SelectMany(f => f.GetCustomAttributes(
                              typeof(DescriptionAttribute), false),
                              (f, a) => new { Field = f, Att = a })
-                             .SingleOrDefault(a => String.Equals(((DescriptionAttribute)a.Att).Description,description,StringComparison.OrdinalIgnoreCase));
+                             .SingleOrDefault(a => string.Equals(((DescriptionAttribute)a.Att).Description, description, StringComparison.OrdinalIgnoreCase));
          if (field == null)
+         {
             throw new ArgumentException($"Enum with description ({description}) not found");
+         }
+
          return (T)field.Field.GetRawConstantValue();
       }
    }

@@ -35,7 +35,7 @@ namespace DatabaseServer
       {
          ManualResetEvent resetEvent = (ManualResetEvent)mrevent;
          var host = new ServerHost();
-         host.Start(SingleonIPCService.Instance, resetEvent, new ConnectionOptions("DatabaseServer") { Scheme = BindingScheme.NAMED_PIPE | BindingScheme.TCP });
+         host.Start(SingleonIPCService.Instance, resetEvent, new ServerOptions("DatabaseServer", null) { Scheme = BindingScheme.NAMED_PIPE | BindingScheme.TCP });
       }
 
       private static void Instance_OnMessageRecieved(object sender, SingleonIPCService.MessageRecievedEventArgs e)
