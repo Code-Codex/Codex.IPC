@@ -81,7 +81,7 @@ namespace IPTestClient
             if (int.TryParse(Console.ReadLine(), out int selectedIndex))
             {
                _IPCClientThread = new Thread(ClientThreadLoop);
-               _IPCClientThread.Start(options[selectedIndex - 1]);
+               _IPCClientThread.Start(options[selectedIndex - 1].ConnectionOption);
             }
          }
 

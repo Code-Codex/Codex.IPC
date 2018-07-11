@@ -75,10 +75,10 @@ namespace Codex.IPC
             host.AddServiceEndpoint(new UdpDiscoveryEndpoint(UdpDiscoveryEndpoint.DefaultIPv4MulticastAddress));
 
             EndpointDiscoveryBehavior discoveryBehavior = new EndpointDiscoveryBehavior();
-            discoveryBehavior.Scopes.Add(new Uri($"id#{options.ProcessID}".ToLower()));
+            discoveryBehavior.Scopes.Add(new Uri($"id:{options.ProcessID}".ToLower()));
             foreach (KeyValuePair<string, string> scope in options.Scopes)
             {
-               discoveryBehavior.Scopes.Add(new Uri($"{scope.Key}#{scope.Value}".ToLower()));
+               discoveryBehavior.Scopes.Add(new Uri($"{scope.Key}:{scope.Value}".ToLower()));
             }
 
             foreach (ServiceEndpoint endpoint in contractEndpoints)
@@ -216,11 +216,11 @@ namespace Codex.IPC
             foreach(var proc in processGroup)
             {
                var procOptions = GetConnectionOptions(proc.Select(x => x.Address));
-               var customScopes = proc.First().Scopes.Where(x=>x.OriginalString.Contains("#"));
+               var customScopes = proc.First().Scopes.Where(x=>x.OriginalString.Contains(":"));
                var scopes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                foreach(var item in customScopes)
                {
-                  var splits = item.OriginalString.Split('#');
+                  var splits = item.OriginalString.Split(':');
                   scopes[splits[0]] = splits[1];
                }
 

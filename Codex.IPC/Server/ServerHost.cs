@@ -62,6 +62,8 @@ namespace Codex.IPC.Server
                Trace.WriteLine(ea.Address);
             }
 
+
+
             resetEvent.WaitOne();
             host.Close();
          }

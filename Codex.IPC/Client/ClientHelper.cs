@@ -46,11 +46,11 @@ namespace Codex.IPC
       {
          var discoveryClient = new DiscoveryClient(new UdpDiscoveryEndpoint(UdpDiscoveryEndpoint.DefaultIPv4MulticastAddress));
          var findCriteria = FindCriteria.CreateMetadataExchangeEndpointCriteria(typeof(IIPC));
-         findCriteria.Scopes.Add(new Uri($"id#{serverId}".ToLower()));
+         findCriteria.Scopes.Add(new Uri($"id:{serverId}".ToLower()));
          if(filterCriteria != null)
          {
             foreach(var entry in filterCriteria)
-               findCriteria.Scopes.Add(new Uri($"{entry.Key}#{entry.Value}".ToLower()));
+               findCriteria.Scopes.Add(new Uri($"{entry.Key}:{entry.Value}".ToLower()));
          }
 
          return await discoveryClient.FindTaskAsync(findCriteria);
