@@ -113,7 +113,7 @@ namespace IPTestClient
       public void Reply(ResponseMessage response)
       {
          CounterData data = response.GetBody<CounterData>();
-         Console.WriteLine($"{data.Type,-10} - {data.Value * 100} %");
+         Console.WriteLine($"{data.Type,-10} - {data.Value}");
       }
    }
 }
