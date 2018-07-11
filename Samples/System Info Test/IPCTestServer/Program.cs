@@ -88,7 +88,7 @@ namespace IPCTestServer
             }
          }
 
-         host.Start(SingleonIPCService.Instance, resetEvent, new ConnectionOptions(_options.ServerName) { Scheme = schemes, EnableDiscovery = true });
+         host.Start(SingleonIPCService.Instance, resetEvent, new ServerOptions(_options.ServerName, new Dictionary<string, string>() { { "Description","Report CPU and RAM usage" } }) { Scheme = schemes, EnableDiscovery = true });
       }
 
       static void ReplyThreadLoop()

@@ -75,10 +75,10 @@ namespace Codex.IPC
             host.AddServiceEndpoint(new UdpDiscoveryEndpoint(UdpDiscoveryEndpoint.DefaultIPv4MulticastAddress));
 
             EndpointDiscoveryBehavior discoveryBehavior = new EndpointDiscoveryBehavior();
-            discoveryBehavior.Scopes.Add(new Uri($"id:{options.ProcessID}".ToLower()));
+            discoveryBehavior.Scopes.Add(new Uri($"id#{options.ProcessID}".ToLower()));
             foreach (KeyValuePair<string, string> scope in options.Scopes)
             {
-               discoveryBehavior.Scopes.Add(new Uri($"{scope.Key}:{scope.Value}".ToLower()));
+               discoveryBehavior.Scopes.Add(new Uri($"{scope.Key}#{scope.Value}".ToLower()));
             }
 
             foreach (ServiceEndpoint endpoint in contractEndpoints)
@@ -203,9 +203,31 @@ namespace Codex.IPC
       /// <summary>
       /// Get the options to connect to the server based on the discovery result
       /// </summary>
-      public static List<IConnectionOptions> GetConnectionOptions(FindResponse searchResponse)
+      public static List<(IConnectionOptions ConnectionOption, Dictionary<string, string> Scopes)> GetConnectionOptions(FindResponse searchResponse)
       {
-         return Helpers.GetConnectionOptions(searchResponse.Endpoints.Select(x => x.Address));
+         List<(IConnectionOptions ConnectionOption, Dictionary<string, string> Scopes)> options = new List<(IConnectionOptions ConnectionOption, Dictionary<string, string> Scopes)>();
+
+         // Group by all the hosts that are discovered
+         IEnumerable<IGrouping<string, EndpointDiscoveryMetadata>> groupedEndpoints = searchResponse.Endpoints.GroupBy(x => x.Address.Uri.Host);
+         foreach (IGrouping<string, EndpointDiscoveryMetadata> hostGroup in groupedEndpoints)
+         {
+            // Group by all processes within the host 
+            IEnumerable<IGrouping<string, EndpointDiscoveryMetadata>> processGroup = hostGroup.GroupBy(x => getProcessID(x.Address.Uri));
+            foreach(var proc in processGroup)
+            {
+               var procOptions = GetConnectionOptions(proc.Select(x => x.Address));
+               var customScopes = proc.First().Scopes.Where(x=>x.OriginalString.Contains("#"));
+               var scopes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+               foreach(var item in customScopes)
+               {
+                  var splits = item.OriginalString.Split('#');
+                  scopes[splits[0]] = splits[1];
+               }
+
+               options.AddRange(procOptions.Select(x=> (x, scopes)));
+            }
+         }
+         return options;
       }
 
       /// <summary>

@@ -1,38 +1,34 @@
-﻿using Codex.IPC.DataTypes;
+﻿using Codex.IPC;
 using Codex.IPC.Client;
+using Codex.IPC.Contracts;
+using Codex.IPC.DataTypes;
+using IPCTestCommon;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.ServiceModel;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using IPCTestCommon;
-using Codex.IPC;
-using Codex.IPC.Contracts;
 using System.ServiceModel.Discovery;
+using System.Threading;
 using CommandLine;
 
 namespace IPTestClient
 {
-
-   class Program
+   internal class Program
    {
-      static Thread _IPCClientThread;
-      static IPCDuplexClient _client;
-      static string _serverProcId;
-      static CounterType _counterType;
-      static ManualResetEvent resetEvent;
+      private static Thread _IPCClientThread;
+      private static IPCDuplexClient _client;
+      private static string _serverProcId;
+      private static CounterType _counterType;
+      private static ManualResetEvent resetEvent;
 
-      static int Main(string[] args)
+      private static int Main(string[] args)
       {
          _serverProcId = "IPCTestServer";
          bool exit = false;
          var result = Parser.Default.ParseArguments<CommandOptions>(args);
          result.WithParsed(op =>
          {
-            switch(op.CounterType)
+            switch (op.CounterType)
             {
                case 'c':
                case 'C':
@@ -55,21 +51,29 @@ namespace IPTestClient
          });
 
          if (exit)
+         {
             return 1;
+         }
 
          resetEvent = new ManualResetEvent(false);
 
          Console.WriteLine("Searching servers...\n");
 
-         var findResponse = ClientHelper.FindServersAsync(_serverProcId, null).Result;
+         FindResponse findResponse = ClientHelper.FindServersAsync(_serverProcId, null).Result;
 
          if (findResponse != null)
          {
-            var options = Helpers.GetConnectionOptions(findResponse.Endpoints.Select(x => x.Address).ToList());
+            List<(Codex.IPC.Interfaces.IConnectionOptions ConnectionOption, Dictionary<string, string> Scopes)> options = Helpers.GetConnectionOptions(findResponse);
             int index = 1;
-            foreach (var opt in options)
+            foreach ((Codex.IPC.Interfaces.IConnectionOptions ConnectionOption, Dictionary<string, string> Scopes) opt in options)
             {
-               Console.WriteLine($"{index}. Host: {opt.HostName}");
+               Console.WriteLine($"{index}. Host: {opt.ConnectionOption.HostName}.");
+               Console.WriteLine("\tScopes:");
+               foreach (KeyValuePair<string, string> scope in opt.Scopes)
+               {
+                  Console.WriteLine($"\t{scope.Key}: {scope.Value}.");
+               }
+
                index++;
             }
 
@@ -86,15 +90,14 @@ namespace IPTestClient
          return 0;
       }
 
-
-      static void ClientThreadLoop(object connOptions)
+      private static void ClientThreadLoop(object connOptions)
       {
          // Construct InstanceContext to handle messages on callback interface
          InstanceContext instanceContext = new InstanceContext(new CallbackHandler());
          _client = ClientHelper.GetDuplexClient(instanceContext, (ConnectionOptions)connOptions, BindingScheme.TCP);
          _client.Open();
-         var requestMessage = new RequestMessage();
-         var registerMessage = new RegisterMessage { Counter = _counterType };
+         RequestMessage requestMessage = new RequestMessage();
+         RegisterMessage registerMessage = new RegisterMessage { Counter = _counterType };
          Trace.WriteLine(registerMessage.Counter.ToString());
          requestMessage.SetBody(registerMessage);
          _client.Subscribe(requestMessage);
@@ -109,7 +112,7 @@ namespace IPTestClient
    {
       public void Reply(ResponseMessage response)
       {
-         var data = response.GetBody<CounterData>();
+         CounterData data = response.GetBody<CounterData>();
          Console.WriteLine($"{data.Type,-10} - {data.Value * 100} %");
       }
    }
